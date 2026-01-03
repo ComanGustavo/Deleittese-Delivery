@@ -1,43 +1,71 @@
-/* --- CONFIGURACIÓN GENERAL --- */
+/* --- CONFIGURACIÓN GLOBAL --- */
 body { 
-    background: #121212; 
-    color: #ffffff; 
+    background-color: #F5E6D3; /* Fondo crema de tu imagen */
+    color: #000000;            /* Letras negras en todo el sitio */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0;
+    padding: 0;
     overflow-x: hidden; 
 }
 
 /* --- TEXTO DE BIENVENIDA --- */
 .bienvenida-texto { 
-    color: #ff5722; 
+    color: #000000;            /* Letras negras */
     font-size: 1.1rem; 
-    font-style: italic; 
+    font-weight: bold;
     max-width: 800px; 
-    margin: 0 auto 20px; 
+    margin: 20px auto; 
     text-align: center; 
 }
 
-/* --- GRILLA DE PRODUCTOS (4 Columnas) --- */
+/* --- CATEGORÍAS (ESTILO SEGÚN TU IMAGEN CON BORDES NEGROS) --- */
+.filtros-contenedor {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.btn-categoria {
+    background-color: #ffffff; 
+    color: #000000;            /* Letras negras */
+    border: 2px solid #000000; /* Borde negro fuerte */
+    border-radius: 8px;        
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-categoria:hover, .btn-categoria.active {
+    background-color: #000000; /* Fondo negro al seleccionar */
+    color: #ffffff;            /* Letras blancas para contraste */
+}
+
+/* --- GRILLA DE PRODUCTOS (4 COLUMNAS) --- */
 #menu-list { 
     display: flex; 
     flex-wrap: wrap; 
     gap: 15px; 
     justify-content: center; 
-    padding: 0; 
+    padding: 15px; 
 }
 
-/* Ajuste de 4 columnas según tu instrucción previa */
+/* Mantiene 4 imágenes por fila [cite: 2025-10-27] */
 .col-item { 
     width: calc(25% - 15px) !important; 
-    min-width: 200px; 
+    min-width: 220px; 
     margin-bottom: 20px; 
-    flex: 0 0 auto; 
 }
 
-/* --- TARJETAS DE MENÚ --- */
+/* --- TARJETAS DE PRODUCTO CON BORDES NEGROS --- */
 .menu-card { 
-    background: #1e1e1e; 
-    color: white; 
-    border: 1px solid #333; 
+    background: #ffffff;      
+    color: #000000;            /* Letras negras */
+    border: 2px solid #000000; /* Borde negro fuerte */
     border-radius: 12px; 
     overflow: hidden; 
     transition: all 0.3s ease; 
@@ -45,9 +73,8 @@ body {
 }
 
 .menu-card:hover { 
-    transform: translateY(-8px); 
-    border-color: #ffc107; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    transform: translateY(-5px); 
+    box-shadow: 5px 5px 0px #000000; /* Efecto de sombra sólida negra */
 }
 
 /* --- IMÁGENES --- */
@@ -55,49 +82,17 @@ body {
     height: 250px; 
     object-fit: cover; 
     width: 100%; 
-    border-bottom: 1px solid #333; 
-    max-width: none; /* Asegura que no se corte en la grilla */
+    border-bottom: 2px solid #000000; /* Línea divisoria negra */
 }
 
-/* Especial para bebidas con fondo claro o logos */
-.menu-item-image.img-bebida { 
-    object-fit: contain !important; 
-    background-color: #1a1a1a; 
-    padding: 15px; 
-}
-
-/* --- ESTADOS Y PRECIOS --- */
+/* --- PRECIOS --- */
 .price { 
-    font-size: 1.3rem; 
-    font-weight: bold; 
-    color: #ffc107 !important; 
+    font-size: 1.4rem; 
+    font-weight: 900; 
+    color: #000000 !important; /* Precio en negro resaltado */
 }
 
-.sin-stock { 
-    filter: grayscale(1); 
-    opacity: 0.6; 
-    pointer-events: none; /* Evita que se agregue al carrito */
-}
-
-.sin-stock::after {
-    content: "AGOTADO";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg);
-    background: rgba(255, 0, 0, 0.8);
-    color: white;
-    padding: 5px 15px;
-    font-weight: bold;
-    border-radius: 5px;
-}
-
-/* --- MODO ADMINISTRADOR (Resaltado) --- */
-body.admin-active .menu-card {
-    border: 2px dashed #00d4ff;
-}
-
-/* --- BOTÓN FLOTANTE (Mozo/Pedido) --- */
+/* --- BOTÓN FLOTANTE --- */
 .btn-mozo {
     position: fixed; 
     bottom: 25px; 
@@ -106,35 +101,21 @@ body.admin-active .menu-card {
     height: 65px;
     border-radius: 50%; 
     background: #ffc107; 
-    border: none;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
-    font-size: 24px;
+    border: 3px solid #000000; /* Borde negro */
+    color: #000000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
     cursor: pointer; 
     z-index: 999; 
-    transition: 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.btn-mozo:hover { 
-    transform: scale(1.1); 
-    background: #e0a800; 
-}
-
-/* --- RESPONSIVE (Ajustes para Tablet y Móvil) --- */
+/* --- RESPONSIVE --- */
 @media (max-width: 992px) { 
-    .col-item { 
-        width: calc(50% - 10px) !important; /* 2 columnas en tablets */
-    } 
+    .col-item { width: calc(50% - 10px) !important; } 
 }
 
 @media (max-width: 576px) { 
-    .col-item { 
-        width: 100% !important; /* 1 columna en celulares muy pequeños */
-        min-width: unset;
-    } 
-    .menu-item-image {
-        height: 200px; /* Reducimos altura de imagen en móvil */
-    }
+    .col-item { width: 100% !important; } 
 }
