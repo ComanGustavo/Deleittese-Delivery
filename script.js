@@ -1,6 +1,6 @@
 const menuData = [
     // --- EMPANADAS ---
-    { id: 1, name: "Empanadas caseras - Jamón y Muzza", price: "15.000", category: "Empanadas", icon: "🥟", image: "imagen/empanadas.jpg", stock: true }, 
+   
 
     // --- PAPAS FRITAS ---
     { id: 2, name: "Papas Fritas Chica", price: "4.000", category: "Papas Fritas", icon: "🍟", image: "imagen/img58.jpeg", stock: true }, 
