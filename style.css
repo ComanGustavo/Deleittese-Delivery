@@ -1,7 +1,7 @@
 /* --- CONFIGURACIÓN GLOBAL --- */
 body { 
-    background-color: #F5E6D3; /* Fondo crema de tu imagen */
-    color: #000000;            /* Letras negras en todo el sitio */
+    background-color: #F5E6D3; /* Fondo crema definitivo */
+    color: #000000 !important; /* Letras negras en todo el sitio */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     margin: 0;
     padding: 0;
@@ -10,7 +10,7 @@ body {
 
 /* --- TEXTO DE BIENVENIDA --- */
 .bienvenida-texto { 
-    color: #000000;            /* Letras negras */
+    color: #000000 !important; 
     font-size: 1.1rem; 
     font-weight: bold;
     max-width: 800px; 
@@ -18,7 +18,7 @@ body {
     text-align: center; 
 }
 
-/* --- CATEGORÍAS (ESTILO SEGÚN TU IMAGEN CON BORDES NEGROS) --- */
+/* --- CATEGORÍAS (BORDES Y LETRAS NEGRAS FIJAS) --- */
 .filtros-contenedor {
     display: flex;
     flex-wrap: wrap;
@@ -30,19 +30,19 @@ body {
 
 .btn-categoria {
     background-color: #ffffff; 
-    color: #000000;            /* Letras negras */
-    border: 2px solid #000000; /* Borde negro fuerte */
+    color: #000000 !important;  /* Letras negras siempre */
+    border: 2px solid #000000 !important; /* Bordes negros siempre */
     border-radius: 8px;        
     padding: 8px 16px;
     font-size: 0.9rem;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-.btn-categoria:hover, .btn-categoria.active {
-    background-color: #000000; /* Fondo negro al seleccionar */
-    color: #ffffff;            /* Letras blancas para contraste */
+/* Estilo para la categoría seleccionada */
+.btn-categoria.active {
+    background-color: #000000 !important; 
+    color: #ffffff !important; /* Invertimos solo para la activa */
 }
 
 /* --- GRILLA DE PRODUCTOS (4 COLUMNAS) --- */
@@ -54,27 +54,21 @@ body {
     padding: 15px; 
 }
 
-/* Mantiene 4 imágenes por fila [cite: 2025-10-27] */
+/* Mantiene 4 imágenes por fila */
 .col-item { 
     width: calc(25% - 15px) !important; 
     min-width: 220px; 
     margin-bottom: 20px; 
 }
 
-/* --- TARJETAS DE PRODUCTO CON BORDES NEGROS --- */
+/* --- TARJETAS DE PRODUCTO --- */
 .menu-card { 
     background: #ffffff;      
-    color: #000000;            /* Letras negras */
-    border: 2px solid #000000; /* Borde negro fuerte */
+    color: #000000 !important; 
+    border: 2px solid #000000 !important; /* Borde negro definido */
     border-radius: 12px; 
     overflow: hidden; 
-    transition: all 0.3s ease; 
     height: 100%;
-}
-
-.menu-card:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 5px 5px 0px #000000; /* Efecto de sombra sólida negra */
 }
 
 /* --- IMÁGENES --- */
@@ -82,7 +76,7 @@ body {
     height: 250px; 
     object-fit: cover; 
     width: 100%; 
-    border-bottom: 2px solid #000000; /* Línea divisoria negra */
+    border-bottom: 2px solid #000000 !important; /* Línea divisoria negra */
 }
 
 /* --- PRECIOS --- */
@@ -101,8 +95,8 @@ body {
     height: 65px;
     border-radius: 50%; 
     background: #ffc107; 
-    border: 3px solid #000000; /* Borde negro */
-    color: #000000;
+    border: 3px solid #000000 !important; /* Borde negro grueso */
+    color: #000000 !important;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
     cursor: pointer; 
     z-index: 999; 
