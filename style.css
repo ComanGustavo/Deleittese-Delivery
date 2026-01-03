@@ -1,0 +1,140 @@
+/* --- CONFIGURACIÓN GENERAL --- */
+body { 
+    background: #121212; 
+    color: #ffffff; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    overflow-x: hidden; 
+}
+
+/* --- TEXTO DE BIENVENIDA --- */
+.bienvenida-texto { 
+    color: #ff5722; 
+    font-size: 1.1rem; 
+    font-style: italic; 
+    max-width: 800px; 
+    margin: 0 auto 20px; 
+    text-align: center; 
+}
+
+/* --- GRILLA DE PRODUCTOS (4 Columnas) --- */
+#menu-list { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    justify-content: center; 
+    padding: 0; 
+}
+
+/* Ajuste de 4 columnas según tu instrucción previa */
+.col-item { 
+    width: calc(25% - 15px) !important; 
+    min-width: 200px; 
+    margin-bottom: 20px; 
+    flex: 0 0 auto; 
+}
+
+/* --- TARJETAS DE MENÚ --- */
+.menu-card { 
+    background: #1e1e1e; 
+    color: white; 
+    border: 1px solid #333; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    transition: all 0.3s ease; 
+    height: 100%;
+}
+
+.menu-card:hover { 
+    transform: translateY(-8px); 
+    border-color: #ffc107; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* --- IMÁGENES --- */
+.menu-item-image { 
+    height: 250px; 
+    object-fit: cover; 
+    width: 100%; 
+    border-bottom: 1px solid #333; 
+    max-width: none; /* Asegura que no se corte en la grilla */
+}
+
+/* Especial para bebidas con fondo claro o logos */
+.menu-item-image.img-bebida { 
+    object-fit: contain !important; 
+    background-color: #1a1a1a; 
+    padding: 15px; 
+}
+
+/* --- ESTADOS Y PRECIOS --- */
+.price { 
+    font-size: 1.3rem; 
+    font-weight: bold; 
+    color: #ffc107 !important; 
+}
+
+.sin-stock { 
+    filter: grayscale(1); 
+    opacity: 0.6; 
+    pointer-events: none; /* Evita que se agregue al carrito */
+}
+
+.sin-stock::after {
+    content: "AGOTADO";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 5px 15px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+/* --- MODO ADMINISTRADOR (Resaltado) --- */
+body.admin-active .menu-card {
+    border: 2px dashed #00d4ff;
+}
+
+/* --- BOTÓN FLOTANTE (Mozo/Pedido) --- */
+.btn-mozo {
+    position: fixed; 
+    bottom: 25px; 
+    right: 25px; 
+    width: 65px; 
+    height: 65px;
+    border-radius: 50%; 
+    background: #ffc107; 
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+    font-size: 24px;
+    cursor: pointer; 
+    z-index: 999; 
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-mozo:hover { 
+    transform: scale(1.1); 
+    background: #e0a800; 
+}
+
+/* --- RESPONSIVE (Ajustes para Tablet y Móvil) --- */
+@media (max-width: 992px) { 
+    .col-item { 
+        width: calc(50% - 10px) !important; /* 2 columnas en tablets */
+    } 
+}
+
+@media (max-width: 576px) { 
+    .col-item { 
+        width: 100% !important; /* 1 columna en celulares muy pequeños */
+        min-width: unset;
+    } 
+    .menu-item-image {
+        height: 200px; /* Reducimos altura de imagen en móvil */
+    }
+}
