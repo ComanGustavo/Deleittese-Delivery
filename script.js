@@ -207,39 +207,33 @@ window.cambioMetodoEntrega = () => {
 // ==========================================
 window.enviarAlPanelAdmin = () => {
     const nombre = document.getElementById('cliente-nombre').value;
-    const tel = document.getElementById('cliente-tel').value;
     const direccion = document.getElementById('cliente-dir').value || "Retiro en Local";
-    const pago = document.getElementById('forma-pago').value;
-    const nota = document.getElementById('cliente-nota').value;
-    const total = document.getElementById('total-pago').innerText;
+    const total = document.getElementById("total-pago").innerText;
+    const nota = document.getElementById('cliente-nota').value || "";
 
-    if (!nombre || !tel || carrito.length === 0) {
-        alert("⚠️ Completa nombre, teléfono y agrega productos.");
+    if (!nombre || carrito.length === 0) {
+        alert("⚠️ Completa tu nombre y agrega productos.");
         return;
     }
 
+    // Guardamos el pedido en Firebase
     const nuevoPedido = {
         cliente: nombre,
-        telefono: tel,
         direccion: direccion,
-        pago: pago,
-        nota: nota,
-        items: carrito.map(item => ({ nombre: item.name, cant: item.cantidad })),
+        // Guardamos los items como una lista limpia
+        items: carrito.map(i => `${i.cantidad}x ${i.name}`).join("\n"),
         total: total,
-        fecha: new Date().toLocaleString(),
-        estado: "Pendiente"
+        nota: nota,
+        fecha: firebase.database.ServerValue.TIMESTAMP,
+        impreso: false // Importante para que el panel sepa qué imprimir
     };
 
     database.ref("pedidos").push(nuevoPedido)
         .then(() => {
-            alert("✅ ¡Pedido enviado con éxito al panel!");
+            alert("✅ ¡Pedido enviado! En breve lo prepararemos.");
             carrito = [];
             actualizarInterfaz();
-            const modalElem = document.getElementById('modalCarrito');
-            const modal = bootstrap.Modal.getInstance(modalElem);
-            if (modal) modal.hide();
-        })
-        .catch(err => alert("Error: " + err));
+        });
 };
 window.enviarPorWhatsApp = () => {
     if (carrito.length === 0) {
