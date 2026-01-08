@@ -245,27 +245,27 @@ window.enviarAlPanelAdmin = () => {
 window.enviarPorWhatsApp = () => {
     if (carrito.length === 0) return alert("El carrito está vacío");
 
-    // Capturamos los datos del formulario
-    const nombreCliente = document.getElementById('cliente-nombre').value;
-    const totalPedido = document.getElementById("total-pago").innerText;
+    // Capturamos los datos asegurándonos de que existan
+    const inputNombre = document.getElementById('cliente-nombre');
+    const displayTotal = document.getElementById("total-pago");
     
-    // Creamos una lista simplificada de productos para el ticket
+    const nombre = inputNombre ? inputNombre.value : "Cliente";
+    const total = displayTotal ? displayTotal.innerText : "$0";
+    
+    // Creamos la lista de productos
     let itemsTexto = "";
     carrito.forEach(i => itemsTexto += `${i.cantidad}x ${i.name}, `);
 
-    // Detectamos la dirección de tu web automáticamente
-    const urlBase = window.location.origin;
-    
-    // CONSTRUIMOS EL LINK (Asegúrate de que esta línea esté completa)
-    const linkTicket = `https://comangustavo.github.io/Deleittese-Delivery/ticket.html?cliente=${encodeURIComponent(cliente)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
-    // ARMAMOS EL MENSAJE PARA WHATSAPP
+    // URL de tu GitHub Pages [cite: 2025-12-29]
+    const linkTicket = `https://comangustavo.github.io/Deleittese-Delivery/ticket.html?cliente=${encodeURIComponent(nombre)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
+
+    // Armamos el mensaje para WhatsApp
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
     carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
-    msg += `%0A*TOTAL:* ${totalPedido}`;
-    
-    // AGREGAMOS EL LINK AL FINAL DEL MENSAJE
+    msg += `%0A*TOTAL:* ${total}`;
     msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`; 
     
+    // Usamos el número que ya tenés definido en TEL_LOCAL
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
 window.accesoAdmin = () => {
