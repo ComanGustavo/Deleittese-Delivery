@@ -282,11 +282,7 @@ msg += `%0A*TOTAL:* ${encodeURIComponent(total)}`;
 msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`;
 
 
-   window.open(
-  `https://wa.me/${TEL_LOCAL}?text=${encodeURIComponent(msg)}`,
-  "_blank"
-);
-
+    window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
 
 
