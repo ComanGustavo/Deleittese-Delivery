@@ -244,12 +244,30 @@ window.enviarAlPanelAdmin = () => {
 
 window.enviarPorWhatsApp = () => {
     if (carrito.length === 0) return alert("El carrito está vacío");
+
+    // Capturamos los datos del formulario
+    const nombreCliente = document.getElementById('cliente-nombre').value;
+    const totalPedido = document.getElementById("total-pago").innerText;
+    
+    // Creamos una lista simplificada de productos para el ticket
+    let itemsTexto = "";
+    carrito.forEach(i => itemsTexto += `${i.cantidad}x ${i.name}, `);
+
+    // Detectamos la dirección de tu web automáticamente
+    const urlBase = window.location.origin;
+    
+    // CONSTRUIMOS EL LINK (Asegúrate de que esta línea esté completa)
+    const linkTicket = `https://comangustavo.github.io/Deleittese-Delivery/ticket.html?cliente=${encodeURIComponent(cliente)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
+    // ARMAMOS EL MENSAJE PARA WHATSAPP
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
     carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
-    msg += `%0A*TOTAL:* ${document.getElementById("total-pago").innerText}`;
+    msg += `%0A*TOTAL:* ${totalPedido}`;
+    
+    // AGREGAMOS EL LINK AL FINAL DEL MENSAJE
+    msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`; 
+    
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
-
 window.accesoAdmin = () => {
     const clave = prompt("Ingrese la clave de administrador:");
     if (clave === "deleittese2026") {
@@ -257,4 +275,6 @@ window.accesoAdmin = () => {
     } else {
         alert("Clave incorrecta.");
     }
+
+    
 };

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Courier New', monospace; width: 260px; padding: 10px; color: black; background: white; }
+        .text-center { text-align: center; }
+        .linea { border-top: 1px dashed black; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="text-center"><h3>DELEITTESE</h3><p>Pedido WhatsApp</p></div>
+    <div class="linea"></div>
+    <div id="contenido"></div>
+    <div class="linea"></div>
+    <script>
+        // Esta parte lee los datos del link
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('contenido').innerHTML = `
+            <p><b>Cliente:</b> ${params.get('cliente')}</p>
+            <p><b>Pedido:</b><br>${params.get('pedido')}</p>
+            <p><b>Total:</b> ${params.get('total')}</p>
+        `;
+        window.onload = function() { window.print(); setTimeout(() => { window.close(); }, 500); };
+    </script>
+</body>
+</html>
