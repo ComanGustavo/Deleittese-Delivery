@@ -56,7 +56,7 @@
     // Mostramos los datos en el ticket
     document.getElementById('contenedor-datos').innerHTML = `
         <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') || 'No indicado'}</div>
-        <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') || 'No indicada'}</div>
+        <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') || 'No indicada'} </div> 
         <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') || 'Sin productos'}</div>
         <div class="linea"></div>
         <div class="dato"><b>COSTO ENVÍO:</b> ${params.get('envio') || '$0'}</div>
