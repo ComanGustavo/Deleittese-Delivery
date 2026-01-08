@@ -244,10 +244,9 @@ window.enviarAlPanelAdmin = () => {
 window.enviarPorWhatsApp = () => {
     if (carrito.length === 0) return alert("El carrito está vacío");
 
-    // Capturamos los datos con los IDs de tu HTML
+    // Capturamos los datos
     const nombre = document.getElementById('cliente-nombre')?.value || "Cliente";
     const direccion = document.getElementById('cliente-direccion')?.value || "No indicada";
-    // Si el valor del envío es un texto (ej: $500), capturalo así:
     const envio = document.getElementById('valor-envio')?.innerText || "$0";
     const total = document.getElementById("total-pago")?.innerText || "$0";
     
@@ -256,8 +255,7 @@ window.enviarPorWhatsApp = () => {
 
     const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
     
-    // CONSTRUCCIÓN DEL LINK SEGURO
-    // Usamos etiquetas claras: cliente, direccion, pedido, envio, total
+    // ESTA LÍNEA BLINDA EL LINK: Convierte espacios y comas en códigos seguros
     const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsTexto)}&envio=${encodeURIComponent(envio)}&total=${encodeURIComponent(total)}`;
 
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
