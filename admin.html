@@ -21,13 +21,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>📦 Pedidos Entrantes</h1>
         <div class="d-flex gap-2">
-            <span id="estado-impresion" class="badge bg-success">Auto-Impresión Activa</span>
+            <span id="estado-impresion" class="badge bg-primary">Modo Manual (Canon)</span>
             <button class="btn btn-outline-danger btn-sm" onclick="borrarHistorial()">Borrar Todo</button>
         </div>
     </div>
 
     <div id="contenedor-pedidos" class="row">
-        <p class="text-center">Cargando conexión con Firebase...</p>
+        <p class="text-center">Conectando con Firebase...</p>
     </div>
 </div>
 
@@ -52,80 +52,50 @@
     }
     const database = firebase.database();
 
-    // --- LOGICA DE IMPRESIÓN AUTOMÁTICA ---
-    // Escucha cada vez que entra un pedido nuevo (child_added)
+    // 1. AVISO DE NUEVO PEDIDO (SOLO SONIDO)
     database.ref('pedidos').on('child_added', (snapshot) => {
         const pedido = snapshot.val();
-        const id = snapshot.key;
-
-        // Si el pedido no ha sido impreso, disparamos la descarga
         if (pedido.estado === 'Pendiente' && !pedido.impreso) {
-            descargarArchivoTicket(pedido, id);
-            // Reproducir sonido de aviso
             document.getElementById('audio-notificacion').play().catch(e => console.log("Audio bloqueado"));
         }
     });
 
-   function descargarArchivoTicket(p, id) {
-    const ANCHO_TICKET = 30; // Estándar para 58mm [cite: 2025-12-30]
-    const linea = "=".repeat(ANCHO_TICKET);
-    
-    // Obtener fecha y hora actual [cite: 2026-01-08]
-    const ahora = new Date();
-    const fecha = ahora.toLocaleDateString();
-    const hora = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    // Número de ticket (tomamos los últimos 4 caracteres del ID de Firebase)
-    const nroTicket = id.substring(id.length - 4).toUpperCase();
+    // 2. GENERACIÓN DE TICKET (SOLO AL CLICKEAR)
+    function descargarArchivoTicket(p, id) {
+        const ANCHO_TICKET = 30;
+        const linea = "=".repeat(ANCHO_TICKET);
+        const ahora = new Date();
+        const fecha = ahora.toLocaleDateString();
+        const hora = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const nroTicket = id.substring(id.length - 4).toUpperCase();
 
-    const centrar = (texto) => {
-        const espacios = Math.max(0, Math.floor((ANCHO_TICKET - texto.length) / 2));
-        return " ".repeat(espacios) + texto;
-    };
+        const centrar = (texto) => {
+            const espacios = Math.max(0, Math.floor((ANCHO_TICKET - texto.length) / 2));
+            return " ".repeat(espacios) + texto;
+        };
 
-    let itemsTxt = "";
-    if (p.items) {
-        itemsTxt = p.items.map(i => `${i.cant} x ${i.nombre}`).join('\n');
+        let itemsTxt = Array.isArray(p.items) 
+            ? p.items.map(i => `${i.cant} x ${i.nombre}`).join('\n') 
+            : (p.items || "No hay productos");
+
+        const contenido = `${centrar("DELEITTESE - DELIVERY")}\n${centrar("Ticket: #" + nroTicket)}\n${linea}\nFECHA: ${fecha}\nHORA:  ${hora}\n${linea}\nCLIENTE: ${p.cliente}\nDIR: ${p.direccion}\nTEL: ${p.telefono || 'N/A'}\nPAGO: ${p.pago || p.total}\n${linea}\nPRODUCTOS:\n${itemsTxt}\n${linea}\nOBSERVACIONES:\n${p.nota ? p.nota.toUpperCase() : 'SIN ACLARACIONES'}\n${linea}\n${centrar("TOTAL: " + p.total)}\n${linea}\n${centrar("¡Gracias por elegirnos!")}`;
+
+        const blob = new Blob([contenido], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `pedido_${id}.txt`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+
+        database.ref('pedidos/' + id).update({ impreso: true });
     }
 
-    const contenido = `${centrar("DELEITTESE - DELIVERY")}
-${centrar("Ticket: #" + nroTicket)}
-${linea}
-FECHA: ${fecha}
-HORA:  ${hora}
-${linea}
-CLIENTE: ${p.cliente}
-TEL: ${p.telefono}
-DIR: ${p.direccion}
-PAGO: ${p.pago}
-${linea}
-PRODUCTOS:
-${itemsTxt}
-${linea}
-OBSERVACIONES:
-${p.nota ? p.nota.toUpperCase() : 'SIN ACLARACIONES'}
-${linea}
-${centrar("TOTAL: " + p.total)}
-${linea}
-${centrar("¡Gracias por elegirnos!")}`;
-
-    // Proceso de descarga automática para Printfil
-    const blob = new Blob([contenido], { type: 'text/plain' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `pedido_${id}.txt`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-
-    // Actualizar Firebase [cite: 2026-01-02]
-    database.ref('pedidos/' + id).update({ impreso: true });
-}
-
-    // --- RENDERIZADO DEL PANEL ---
+    // 3. MOSTRAR PEDIDOS EN PANTALLA
     database.ref('pedidos').on('value', (snapshot) => {
         const contenedor = document.getElementById('contenedor-pedidos');
         const pedidos = snapshot.val();
         contenedor.innerHTML = '';
+        
         if (!pedidos) {
             contenedor.innerHTML = '<p class="text-center">No hay pedidos pendientes.</p>';
             return;
@@ -133,7 +103,9 @@ ${centrar("¡Gracias por elegirnos!")}`;
 
         Object.keys(pedidos).reverse().forEach(id => {
             const p = pedidos[id];
-            let itemsHtml = p.items ? p.items.map(i => `<li>• ${i.cant} x ${i.nombre}</li>`).join('') : "";
+            let itemsHtml = Array.isArray(p.items) 
+                ? p.items.map(i => `<li>• ${i.cant} x ${i.nombre}</li>`).join('') 
+                : `<li style="white-space: pre-line;">${p.items}</li>`;
 
             contenedor.innerHTML += `
                 <div class="col-md-6 col-lg-4 mb-3">
@@ -141,10 +113,12 @@ ${centrar("¡Gracias por elegirnos!")}`;
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-2">
                                 <h5 class="card-title text-warning">${p.cliente}</h5>
-                                <span class="badge-pago">${p.pago}</span>
+                                <span class="badge ${p.impreso ? 'bg-secondary' : 'bg-danger'}">
+                                    ${p.impreso ? 'Impreso' : 'Por Imprimir'}
+                                </span>
                             </div>
                             <p class="mb-1 small">📍 <strong>Dir:</strong> <span class="dato-contacto">${p.direccion}</span></p>
-                            <p class="mb-1 small">📞 <strong>Tel:</strong> <span class="dato-contacto">${p.telefono}</span></p>
+                            <p class="mb-1 small">📞 <strong>Tel:</strong> <span class="dato-contacto">${p.telefono || 'N/A'}</span></p>
                             <hr class="border-secondary">
                             <ul class="items-lista">${itemsHtml}</ul>
                             <div class="mb-2">
@@ -154,7 +128,7 @@ ${centrar("¡Gracias por elegirnos!")}`;
                             <h4 class="text-end text-success">${p.total}</h4>
                             <div class="d-flex gap-2 mt-3">
                                 <button class="btn btn-sm btn-success flex-grow-1" onclick="marcarCompletado('${id}')">Listo</button>
-                                <button class="btn btn-sm btn-info text-white" onclick="reimprimir('${id}')">📑 Re-imprimir</button>
+                                <button class="btn btn-sm btn-info text-white" onclick="reimprimir('${id}')">🖨️ Imprimir</button>
                                 <button class="btn btn-sm btn-danger" onclick="eliminarPedido('${id}')">Eliminar</button>
                             </div>
                         </div>
@@ -167,10 +141,9 @@ ${centrar("¡Gracias por elegirnos!")}`;
     function eliminarPedido(id) { if(confirm("¿Eliminar?")) database.ref('pedidos/' + id).remove(); }
     function borrarHistorial() { if(confirm("¿Borrar todo?")) database.ref('pedidos').remove(); }
     
-    // Función para volver a descargar el archivo si la impresora falló
     function reimprimir(id) {
         database.ref('pedidos/' + id).once('value').then(s => {
-            descargarArchivoTicket(s.val(), id);
+            descargarArchivoTicket(s.val(), id); 
         });
     }
 </script>
