@@ -1,71 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Deleittese</title>
-    <style>
-        body { 
-            font-family: 'Courier New', Courier, monospace; 
-            width: 100%; 
-            max-width: 280px; /* Ancho ideal para tickets */
-            margin: 0 auto; 
-            padding: 10px; 
-            color: black; 
-            background: white; 
-        }
-        .text-center { text-align: center; }
-        .linea { border-top: 2px dashed black; margin: 10px 0; }
-        /* Esta es la clave para que el nombre no quede afuera */
-        .dato { 
-            margin: 8px 0; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word; 
-            line-height: 1.2;
-        }
-        h2, p { margin: 5px 0; }
-    </style>
-</head>
-<body>
-    <div class="text-center">
-        <h2>DELEITTESE</h2>
-        <p>*** TICKET DE PEDIDO ***</p>
-    </div>
-    
-    <div class="linea"></div>
-    
-    <div id="contenedor-datos">
-        </div>
-    
-    <div class="linea"></div>
-    
-    <div class="text-center">
-        <p>¡Muchas gracias!</p>
-    </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script>
-    const params = new URLSearchParams(window.location.search);
+<title>Ticket Deleittese</title>
 
-    function renderTicket() {
-        document.getElementById('contenedor-datos').innerHTML = `
-            <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') || 'No indicado'}</div>
-            <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') || 'No indicada'}</div>
-            <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') || 'Sin productos'}</div>
-            <div class="linea"></div>
-            <div class="dato"><b>COSTO ENVÍO:</b> ${params.get('envio') || '$0'}</div>
-            <div class="dato"><b>TOTAL:</b> ${params.get('total') || '$0.00'}</div>
-        `;
+<style>
+    /* ===== CONFIGURACIÓN TICKETERA ===== */
+    body {
+        font-family: 'Courier New', monospace;
+        width: 58mm;                 /* 👈 ticket 58 mm REAL */
+        margin: 0;
+        padding: 6px;
+        color: #000;
+        background: #fff;
     }
 
-    // ESPERAMOS a que todo esté realmente renderizado
-    window.addEventListener("load", () => {
-        renderTicket();
+    h2 {
+        font-size: 16px;
+        margin: 4px 0;
+    }
 
-        // Delay CLAVE para WhatsApp / móviles
-        setTimeout(() => {
-            window.print();
-        }, 500);
-    });
+    p {
+        font-size: 12px;
+        margin: 2px 0;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .linea {
+        border-top: 1px dashed #000;
+        margin: 6px 0;
+    }
+
+    .dato {
+        font-size: 12px;
+        margin: 4px 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.2;
+    }
+
+    @media print {
+        body {
+            margin: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="text-center">
+    <h2>DELEITTESE</h2>
+    <p>*** TICKET DE PEDIDO ***</p>
+</div>
+
+<div class="linea"></div>
+
+<div id="contenedor-datos">
+    <!-- Se completa por JS -->
+</div>
+
+<div class="linea"></div>
+
+<div class="text-center">
+    <p>¡Muchas gracias!</p>
+</div>
+
+<script>
+/* ===== LEEMOS PARAMETROS ===== */
+const params = new URLSearchParams(window.location.search);
+
+/* ===== RENDER TICKET ===== */
+function renderTicket() {
+    const html = `
+        <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') ?? 'No indicado'}</div>
+        <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') ?? 'No indicada'}</div>
+        <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') ?? 'Sin productos'}</div>
+        <div class="linea"></div>
+        <div class="dato"><b>COSTO ENVÍO:</b> ${params.get('envio') ?? '$0'}</div>
+        <div class="dato"><b>TOTAL:</b> ${params.get('total') ?? '$0.00'}</div>
+    `;
+    document.getElementById("contenedor-datos").innerHTML = html;
+}
+
+/* ===== CLAVE PARA WHATSAPP ===== */
+window.onload = () => {
+    renderTicket();
+
+    /* Delay obligatorio para que Chrome/WhatsApp rendericen */
+    setTimeout(() => {
+        window.print();
+    }, 800);
+};
 </script>
 
 </body>
