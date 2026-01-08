@@ -245,27 +245,26 @@ window.enviarAlPanelAdmin = () => {
 window.enviarPorWhatsApp = () => {
     if (carrito.length === 0) return alert("El carrito está vacío");
 
-    // Capturamos los datos asegurándonos de que existan
-    const inputNombre = document.getElementById('cliente-nombre');
-    const displayTotal = document.getElementById("total-pago");
+    // Buscamos los datos en el HTML
+    const elNombre = document.getElementById('cliente-nombre');
+    const elTotal = document.getElementById("total-pago");
     
-    const nombre = inputNombre ? inputNombre.value : "Cliente";
-    const total = displayTotal ? displayTotal.innerText : "$0";
+    // Si no encuentra los elementos, pone valores por defecto para que no se trabe
+    const nombre = elNombre ? elNombre.value : "Cliente";
+    const total = elTotal ? elTotal.innerText : "$0";
     
-    // Creamos la lista de productos
     let itemsTexto = "";
     carrito.forEach(i => itemsTexto += `${i.cantidad}x ${i.name}, `);
 
-    // URL de tu GitHub Pages [cite: 2025-12-29]
-    const linkTicket = `https://comangustavo.github.io/Deleittese-Delivery/ticket.html?cliente=${encodeURIComponent(nombre)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
+    // USAMOS TU URL REAL DE GITHUB
+    const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
+    const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
 
-    // Armamos el mensaje para WhatsApp
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
     carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
     msg += `%0A*TOTAL:* ${total}`;
     msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`; 
     
-    // Usamos el número que ya tenés definido en TEL_LOCAL
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
 window.accesoAdmin = () => {
