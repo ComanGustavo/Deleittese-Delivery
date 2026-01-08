@@ -241,32 +241,37 @@ window.enviarAlPanelAdmin = () => {
         })
         .catch(err => alert("Error: " + err));
 };
-
 window.enviarPorWhatsApp = () => {
-    if (carrito.length === 0) return alert("El carrito está vacío");
+    if (typeof carrito === 'undefined' || carrito.length === 0) return alert("El carrito está vacío");
 
-    // Capturamos los datos del formulario (Asegúrate que los IDs coincidan)
-    const nombre = document.getElementById('cliente-nombre').value || "Cliente";
-    const direccion = document.getElementById('cliente-direccion').value || "Retira en local"; // Nuevo campo
-    const total = document.getElementById("total-pago").innerText || "$0";
+    // Captura de datos del formulario
+    const nombre = document.getElementById('cliente-nombre')?.value || "Cliente";
+    const direccion = document.getElementById('cliente-direccion')?.value || "Retira en local";
+    const envio = document.getElementById('valor-envio')?.innerText || "$0"; // Captura el costo del envío
+    const total = document.getElementById("total-pago")?.innerText || "$0";
     
     let itemsTexto = "";
     carrito.forEach(i => itemsTexto += `${i.cantidad}x ${i.name}, `);
 
     const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
     
-    // USAMOS encodeURIComponent para que la dirección y el nombre NO rompan el link
-    const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
+    // El link ahora lleva una "maleta" más: &envio=
+    const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsTexto)}&envio=${encodeURIComponent(envio)}&total=${encodeURIComponent(total)}`;
 
+    // Mensaje de WhatsApp
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
     msg += `*Cliente:* ${nombre}%0A`;
     msg += `*Dirección:* ${direccion}%0A%0A`;
     carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
+    msg += `%0A------------------------`;
+    msg += `%0A*COSTO ENVÍO:* ${envio}`; // Muestra el envío en el texto de WhatsApp
     msg += `%0A*TOTAL:* ${total}`;
     msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`; 
     
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
+
+
 window.accesoAdmin = () => {
     const clave = prompt("Ingrese la clave de administrador:");
     if (clave === "deleittese2026") {
