@@ -269,13 +269,18 @@ window.enviarPorWhatsApp = () => {
         `&envio=${encodeURIComponent(envio)}` +
         `&total=${encodeURIComponent(total)}`;
 
-    let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
-    msg += `*Cliente:* ${nombre}%0A`;
-    msg += `*Dirección:* ${direccion}%0A%0A`;
-    carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
-    msg += `%0A*ENVÍO:* ${envio}`;
-    msg += `%0A*TOTAL:* ${total}`;
-    msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`;
+         let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
+    msg += `*Cliente:* ${encodeURIComponent(nombre)}%0A`;
+    msg += `*Dirección:* ${encodeURIComponent(direccion)}%0A%0A`;
+
+carrito.forEach(i => 
+    msg += `- ${i.cantidad}x ${encodeURIComponent(i.name)}%0A`
+);
+
+msg += `%0A*ENVÍO:* ${encodeURIComponent(envio)}`;
+msg += `%0A*TOTAL:* ${encodeURIComponent(total)}`;
+msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`;
+
 
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
