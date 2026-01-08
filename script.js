@@ -258,6 +258,7 @@ window.enviarPorWhatsApp = () => {
 
     // USAMOS TU URL REAL DE GITHUB
     const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
+    // Busca esta línea y reemplázala:
     const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
 
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
