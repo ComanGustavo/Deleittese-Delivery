@@ -1,103 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Ticket Deleittese</title>
-
-<style>
-    /* ===== CONFIGURACIÓN TICKETERA ===== */
-    body {
-        font-family: 'Courier New', monospace;
-        width: 58mm;                 /* 👈 ticket 58 mm REAL */
-        margin: 0;
-        padding: 6px;
-        color: #000;
-        background: #fff;
-    }
-
-    h2 {
-        font-size: 16px;
-        margin: 4px 0;
-    }
-
-    p {
-        font-size: 12px;
-        margin: 2px 0;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .linea {
-        border-top: 1px dashed #000;
-        margin: 6px 0;
-    }
-
-    .dato {
-        font-size: 12px;
-        margin: 4px 0;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        line-height: 1.2;
-    }
-
-    @media print {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Deleittese</title>
+    <style>
+        /* ===== CONFIGURACIÓN TICKETERA 58mm ===== */
         body {
+            font-family: 'Courier New', monospace;
+            width: 58mm;
             margin: 0;
+            padding: 4px;
+            color: #000;
+            background: #fff;
         }
-    }
-</style>
-</head>
 
+        .text-center { text-align: center; }
+        
+        h2 { 
+            font-size: 16px; 
+            margin: 4px 0; 
+            text-transform: uppercase;
+        }
+
+        p { font-size: 11px; margin: 2px 0; }
+
+        .linea { 
+            border-top: 1px dashed #000; 
+            margin: 5px 0; 
+        }
+
+        .dato {
+            font-size: 11px;
+            margin: 3px 0;
+            word-wrap: break-word;
+            line-height: 1.2;
+        }
+
+        .item-pedido {
+            font-size: 11px;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        @media print {
+            body { width: 58mm; margin: 0; }
+            @page { margin: 0; }
+        }
+    </style>
+</head>
 <body>
 
-<div class="text-center">
-    <h2>DELEITTESE</h2>
-    <p>*** TICKET DE PEDIDO ***</p>
-</div>
+    <div class="text-center">
+        <h2>DELEITTESE</h2>
+        <p>*** TICKET DE PEDIDO ***</p>
+    </div>
 
-<div class="linea"></div>
+    <div class="linea"></div>
 
-<div id="contenedor-datos">
-    <!-- Se completa por JS -->
-</div>
+    <div id="contenedor-datos">
+        </div>
 
-<div class="linea"></div>
+    <div class="linea"></div>
 
-<div class="text-center">
-    <p>¡Muchas gracias!</p>
-</div>
+    <div class="text-center">
+        <p>¡Muchas gracias!</p>
+        <p>Deleittese 2026</p>
+    </div>
 
-<script>
-/* ===== LEEMOS PARAMETROS ===== */
-const params = new URLSearchParams(window.location.search);
+    <script>
+    function renderTicket() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Procesamos la lista de productos
+        const pedidoRaw = params.get('pedido') ?? 'Sin productos';
+        // Separamos por coma (como configuramos en el script.js)
+        const productosArray = pedidoRaw.split(','); 
+        
+        let detalleHTML = "";
+        productosArray.forEach(prod => {
+            if(prod.trim() !== "") {
+                detalleHTML += `<div class="item-pedido">- ${prod.trim()}</div>`;
+            }
+        });
 
-/* ===== RENDER TICKET ===== */
-function renderTicket() {
-    const html = `
-        <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') ?? 'No indicado'}</div>
-        <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') ?? 'No indicada'}</div>
-        <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') ?? 'Sin productos'}</div>
-        <div class="linea"></div>
-        <div class="dato"><b>COSTO ENVÍO:</b> ${params.get('envio') ?? '$0'}</div>
-        <div class="dato"><b>TOTAL:</b> ${params.get('total') ?? '$0.00'}</div>
-    `;
-    document.getElementById("contenedor-datos").innerHTML = html;
-}
+        const html = `
+            <div class="dato"><b>CLIENTE:</b> ${params.get('cliente') ?? 'No indicado'}</div>
+            <div class="dato"><b>DIRECCIÓN:</b> ${params.get('direccion') ?? 'Retiro en Local'}</div>
+            <div class="linea"></div>
+            <div class="dato"><b>DETALLE:</b><br>${detalleHTML}</div>
+            <div class="linea"></div>
+            <div class="dato"><b>ENVÍO:</b> ${params.get('envio') ?? '$0'}</div>
+            <div class="dato"><b>TOTAL:</b> <span style="font-size:14px;">${params.get('total') ?? '$0.00'}</span></div>
+        `;
+        
+        document.getElementById("contenedor-datos").innerHTML = html;
+    }
 
-/* ===== CLAVE PARA WHATSAPP ===== */
-window.onload = () => {
-    renderTicket();
+    window.onload = () => {
+        renderTicket();
 
-    /* Delay obligatorio para que Chrome/WhatsApp rendericen */
-    setTimeout(() => {
-        window.print();
-    }, 800);
-};
-</script>
+        // Delay para asegurar que el navegador renderice el texto antes de imprimir
+        setTimeout(() => {
+            window.print();
+            // Opcional: window.close(); // Esto cerraría la pestaña después de imprimir
+        }, 1000);
+    };
+    </script>
 
 </body>
 </html>

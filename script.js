@@ -248,44 +248,35 @@ window.enviarPorWhatsApp = () => {
     }
 
     const nombre = document.getElementById('cliente-nombre').value || "Cliente";
-    const direccion = document.getElementById('cliente-dir').value || "Retiro en Local";
-
+    const direccion = document.getElementById('cliente-dir').value || "No indicada";
     const metodo = document.getElementById("metodo-entrega")?.value;
     const envio = metodo === "Envio" ? `$${COSTO_ENVIO.toLocaleString("es-AR")}` : "$0";
-
     const total = document.getElementById("total-pago").innerText;
 
-    let itemsTexto = "";
-    carrito.forEach(i => {
-        itemsTexto += `${i.cantidad}x ${i.name}, `;
-    });
+    // 1. CORRECCIÓN: Usamos coma para que ticket.html pueda hacer el .split(',')
+    // Esto asegura que cada producto sea un renglón en la ticketeras de 58mm [cite: 2025-12-30]
+    let itemsLink = carrito.map(i => `${i.cantidad}x ${i.name}`).join(",");
 
-    const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
+    // 2. Construcción de la URL
+    const urlBase = "https://comangustavo.github.io/Deleittese-Delivery/ticket.html";
+    const params = `?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsLink)}&envio=${encodeURIComponent(envio)}&total=${encodeURIComponent(total)}`;
+    const linkTicket = urlBase + params;
 
-    const linkTicket = `${urlBase}/ticket.html` +
-        `?cliente=${encodeURIComponent(nombre)}` +
-        `&direccion=${encodeURIComponent(direccion)}` +
-        `&pedido=${encodeURIComponent(itemsTexto)}` +
-        `&envio=${encodeURIComponent(envio)}` +
-        `&total=${encodeURIComponent(total)}`;
-
-         let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
+    // 3. Construcción del mensaje de WhatsApp para el dueño [cite: 2025-12-30]
+    let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
     msg += `*Cliente:* ${encodeURIComponent(nombre)}%0A`;
     msg += `*Dirección:* ${encodeURIComponent(direccion)}%0A%0A`;
 
-carrito.forEach(i => 
-    msg += `- ${i.cantidad}x ${encodeURIComponent(i.name)}%0A`
-);
+    carrito.forEach(i => {
+        msg += `- ${i.cantidad}x ${encodeURIComponent(i.name)}%0A`;
+    });
 
-msg += `%0A*ENVÍO:* ${encodeURIComponent(envio)}`;
-msg += `%0A*TOTAL:* ${encodeURIComponent(total)}`;
-msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`;
-
+    msg += `%0A*ENVÍO:* ${encodeURIComponent(envio)}`;
+    msg += `%0A*TOTAL:* ${encodeURIComponent(total)}`;
+    msg += `%0A%0A*📄 ABRIR PARA IMPRIMIR:*%0A${linkTicket}`;
 
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
-
-
 window.accesoAdmin = () => {
     const clave = prompt("Ingrese la clave de administrador:");
     if (clave === "deleittese2026") {
