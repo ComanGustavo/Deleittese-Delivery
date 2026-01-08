@@ -49,15 +49,15 @@
         
         // El nombre de los parámetros (cliente, pedido, total) debe ser 
         // idéntico a los que pusiste en tu variable linkTicket
-        
+    
+    // Los nombres dentro de params.get deben coincidir con el link de arriba
     document.getElementById('contenedor-datos').innerHTML = `
-    <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') || 'No indicado'}</div>
-    <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') || 'No indicada'}</div>
-    <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') || 'Sin productos'}</div>
-    <div class="linea"></div>
-    <div class="dato"><b>COSTO ENVÍO:</b> ${params.get('envio') || '$0'}</div>
-    <div class="dato" style="font-size: 1.2em;"><b>TOTAL:</b> ${params.get('total') || '$0.00'}</div>
-`;
+        <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') || 'No indicado'}</div>
+        <div class="dato"><b>DIRECCIÓN:</b><br>${params.get('direccion') || 'No indicada'}</div>
+        <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') || 'Sin productos'}</div>
+        <div class="linea"></div>
+        <div class="dato"><b>COSTO ENVÍO:</b> ${params.get('envio') || '$0'}</div>
+        <div class="dato"><b>TOTAL:</b> ${params.get('total') || '$0.00'}</div>`;
         // Lanza la impresión al cargar y cierra la pestaña al terminar
         window.onload = () => {
             window.print();
