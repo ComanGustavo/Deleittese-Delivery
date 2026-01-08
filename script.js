@@ -242,21 +242,32 @@ window.enviarAlPanelAdmin = () => {
         .catch(err => alert("Error: " + err));
 };
 window.enviarPorWhatsApp = () => {
-    if (carrito.length === 0) return alert("El carrito está vacío");
+    if (carrito.length === 0) {
+        alert("El carrito está vacío");
+        return;
+    }
 
-    // Capturamos los datos
-    const nombre = document.getElementById('cliente-nombre')?.value || "Cliente";
-    const direccion = document.getElementById('cliente-direccion')?.value || "No indicada";
-    const envio = document.getElementById('valor-envio')?.innerText || "$0";
-    const total = document.getElementById("total-pago")?.innerText || "$0";
-    
+    const nombre = document.getElementById('cliente-nombre').value || "Cliente";
+    const direccion = document.getElementById('cliente-dir').value || "Retiro en Local";
+
+    const metodo = document.getElementById("metodo-entrega")?.value;
+    const envio = metodo === "Envio" ? `$${COSTO_ENVIO.toLocaleString("es-AR")}` : "$0";
+
+    const total = document.getElementById("total-pago").innerText;
+
     let itemsTexto = "";
-    carrito.forEach(i => itemsTexto += `${i.cantidad}x ${i.name}, `);
+    carrito.forEach(i => {
+        itemsTexto += `${i.cantidad}x ${i.name}, `;
+    });
 
     const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
-    
-    // ESTA LÍNEA BLINDA EL LINK: Convierte espacios y comas en códigos seguros
-    const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsTexto)}&envio=${encodeURIComponent(envio)}&total=${encodeURIComponent(total)}`;
+
+    const linkTicket = `${urlBase}/ticket.html` +
+        `?cliente=${encodeURIComponent(nombre)}` +
+        `&direccion=${encodeURIComponent(direccion)}` +
+        `&pedido=${encodeURIComponent(itemsTexto)}` +
+        `&envio=${encodeURIComponent(envio)}` +
+        `&total=${encodeURIComponent(total)}`;
 
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
     msg += `*Cliente:* ${nombre}%0A`;
@@ -264,8 +275,8 @@ window.enviarPorWhatsApp = () => {
     carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
     msg += `%0A*ENVÍO:* ${envio}`;
     msg += `%0A*TOTAL:* ${total}`;
-    msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`; 
-    
+    msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`;
+
     window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
 
