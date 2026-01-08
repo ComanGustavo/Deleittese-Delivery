@@ -1,26 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Deleittese</title>
     <style>
-        body { font-family: 'Courier New', monospace; width: 260px; padding: 10px; color: black; background: white; }
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            width: 100%; 
+            max-width: 280px; /* Ancho ideal para tickets */
+            margin: 0 auto; 
+            padding: 10px; 
+            color: black; 
+            background: white; 
+        }
         .text-center { text-align: center; }
-        .linea { border-top: 1px dashed black; margin: 10px 0; }
+        .linea { border-top: 2px dashed black; margin: 10px 0; }
+        /* Esta es la clave para que el nombre no quede afuera */
+        .dato { 
+            margin: 8px 0; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+            line-height: 1.2;
+        }
+        h2, p { margin: 5px 0; }
     </style>
 </head>
 <body>
-    <div class="text-center"><h3>DELEITTESE</h3><p>Pedido WhatsApp</p></div>
+    <div class="text-center">
+        <h2>DELEITTESE</h2>
+        <p>*** TICKET DE PEDIDO ***</p>
+    </div>
+    
     <div class="linea"></div>
-    <div id="contenido"></div>
+    
+    <div id="contenedor-datos">
+        </div>
+    
     <div class="linea"></div>
+    
+    <div class="text-center">
+        <p>¡Muchas gracias!</p>
+    </div>
+
     <script>
-        // Esta parte lee los datos del link
+        // Capturamos los datos que enviaste desde script.js
         const params = new URLSearchParams(window.location.search);
-        document.getElementById('contenido').innerHTML = `
-            <p><b>Cliente:</b> ${params.get('cliente')}</p>
-            <p><b>Pedido:</b><br>${params.get('pedido')}</p>
-            <p><b>Total:</b> ${params.get('total')}</p>
+        
+        // El nombre de los parámetros (cliente, pedido, total) debe ser 
+        // idéntico a los que pusiste en tu variable linkTicket
+        document.getElementById('contenedor-datos').innerHTML = `
+            <div class="dato"><b>CLIENTE:</b><br>${params.get('cliente') || 'No especificado'}</div>
+            <div class="dato"><b>DETALLE:</b><br>${params.get('pedido') || 'Sin productos'}</div>
+            <div class="dato"><b>TOTAL:</b> ${params.get('total') || '$0.00'}</div>
         `;
-        window.onload = function() { window.print(); setTimeout(() => { window.close(); }, 500); };
+
+        // Lanza la impresión al cargar y cierra la pestaña al terminar
+        window.onload = () => {
+            window.print();
+            setTimeout(() => { window.close(); }, 1500);
+        };
     </script>
 </body>
 </html>
