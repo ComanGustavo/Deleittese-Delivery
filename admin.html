@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Deléittese</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #121212; color: white; font-family: sans-serif; }
+        .pedido-card { background: #1e1e1e; border-left: 5px solid #ffc107; margin-bottom: 15px; }
+        .pedido-listo { border-left-color: #28a745; opacity: 0.6; }
+        .badge-pago { background: #444; color: #ffc107; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .items-lista { font-size: 0.9rem; color: #ccc; list-style: none; padding-left: 0; }
+        .dato-contacto { color: #ff4d4d; font-weight: bold; }
+        h1 { border-bottom: 2px solid #ffc107; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📦 Pedidos Entrantes</h1>
+        <button class="btn btn-outline-danger btn-sm" onclick="borrarHistorial()">Borrar Todo</button>
+    </div>
+
+    <div id="contenedor-pedidos" class="row">
+        <p class="text-center">Cargando conexión con Firebase...</p>
+    </div>
+</div>
+
+<audio id="audio-notificacion" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    // Tu configuración exacta
+    const firebaseConfig = {
+        apiKey: "AIzaSyB-EjyP-L-L-L-L-L-L-L-L-L-L", 
+        authDomain: "deleittese-delivery.firebaseapp.com",
+        databaseURL: "https://deleittese-delivery-default-rtdb.firebaseio.com",
+        projectId: "deleittese-delivery",
+        storageBucket: "deleittese-delivery.appspot.com",
+        messagingSenderId: "324343076188",
+        appId: "1:324343076188:web:8258cca8db166804b01d99"
+    };
+
+    // Inicialización limpia
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+
+    // Escucha de pedidos
+    database.ref('pedidos').on('value', (snapshot) => {
+        const contenedor = document.getElementById('contenedor-pedidos');
+        const pedidos = snapshot.val();
+
+        contenedor.innerHTML = '';
+        if (!pedidos) {
+            contenedor.innerHTML = '<p class="text-center">No hay pedidos pendientes.</p>';
+            return;
+        }
+
+        Object.keys(pedidos).reverse().forEach(id => {
+            const p = pedidos[id];
+            
+            // Procesar items para evitar errores si vienen vacíos
+            let itemsHtml = "";
+            if (p.items) {
+                itemsHtml = p.items.map(i => `<li>• ${i.cant} x ${i.nombre}</li>`).join('');
+            }
+
+            const htmlCard = `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card pedido-card ${p.estado === 'Completado' ? 'pedido-listo' : ''}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h5 class="card-title text-warning">${p.cliente}</h5>
+                                <span class="badge-pago">${p.pago}</span>
+                            </div>
+                            <p class="mb-1 small">📍 <strong>Dir:</strong> <span class="dato-contacto">${p.direccion}</span></p>
+                            <p class="mb-1 small">📞 <strong>Tel:</strong> <span class="dato-contacto">${p.telefono}</span></p>
+                           
+                            <hr class="border-secondary">
+                            <ul class="items-lista">${itemsHtml}</ul>
+
+                            <div class="mb-2">
+                                <small class="text-info">📝 <strong>Observaciones:</strong></small>
+                                <div style="color: #00d4ff; font-weight: bold; font-size: 0.95rem;">
+                                  ${p.nota || 'Sin observaciones'}
+                                </div>
+                            </div>
+                            <h4 class="text-end text-success">${p.total}</h4>
+                            <div class="d-flex gap-2 mt-3">
+                                <button class="btn btn-sm btn-success flex-grow-1" onclick="marcarCompletado('${id}')">Listo</button>
+                                
+                                <button class="btn btn-sm btn-info text-white" onclick="imprimirTicket('${id}')">📑 Ticket</button>
+                                
+                                <button class="btn btn-sm btn-danger" onclick="eliminarPedido('${id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            `;
+            contenedor.innerHTML += htmlCard;
+        });
+    });
+
+    function marcarCompletado(id) {
+        database.ref('pedidos/' + id).update({ estado: 'Completado' });
+    }
+
+    function eliminarPedido(id) {
+        if(confirm("¿Eliminar pedido?")) database.ref('pedidos/' + id).remove();
+    }
+
+    function borrarHistorial() {
+        if(confirm("¿Borrar todo?")) database.ref('pedidos').remove();
+    }
+    
+    
+</script>
+
+</body>
+</html>

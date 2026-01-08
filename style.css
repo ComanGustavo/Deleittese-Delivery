@@ -1,105 +1,98 @@
-/* --- CONFIGURACIÓN GLOBAL --- */
+/* --- CONFIGURACIÓN DE COLORES BASE --- */
+:root {
+    --fondo-crema: #F5E6D3;
+    --negro-puro: #000000;
+    --blanco: #ffffff;
+    --amarillo-deleittese: #ffc107;
+}
+
+/* --- CUERPO DEL SITIO --- */
 body { 
-    background-color: #F5E6D3 !important; /* Fondo crema definitivo */
-    color: #000000 !important;            /* Letras negras en todo el sitio */
+    background-color: var(--fondo-crema) !important; 
+    color: var(--negro-puro) !important; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     margin: 0;
     padding: 0;
-    overflow-x: hidden; 
 }
 
-/* --- CATEGORÍAS (BORDES Y LETRAS NEGRAS DEFINITIVAS) --- */
-.filtros-contenedor {
+header, nav {
+    background-color: #1a1a1a !important; 
+    border-bottom: 3px solid var(--negro-puro);
+}
+
+/* --- BOTONES DE CATEGORÍA (RECUADRO NEGRO DEFINIDO) --- */
+#category-buttons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-    padding: 10px;
+    gap: 12px;
+    margin: 25px 0;
+    padding: 0 10px;
 }
 
 .btn-categoria {
-    background-color: #ffffff !important; 
-    color: #000000 !important;            /* Letras negras fijas */
-    border: 2px solid #000000 !important;  /* Borde negro grueso y fijo */
-    border-radius: 8px !important;        
-    padding: 10px 18px !important;
-    font-size: 1rem !important;
-    font-weight: bold !important;
+    background-color: var(--blanco) !important;
+    color: var(--negro-puro) !important;
+    border: 3px solid var(--negro-puro) !important; /* Borde negro fuerte */
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
     cursor: pointer;
-    text-transform: capitalize;
+    transition: all 0.2s ease;
 }
 
-/* Solo cambia cuando está seleccionado (Botón "Todas" o el activo) */
+/* Botón activo: se invierte el color */
 .btn-categoria.active {
-    background-color: #000000 !important; 
-    color: #ffffff !important; 
+    background-color: var(--negro-puro) !important;
+    color: var(--blanco) !important;
 }
 
-/* --- GRILLA DE PRODUCTOS (4 COLUMNAS) --- */
-#menu-list { 
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 15px; 
-    justify-content: center; 
-    padding: 15px; 
-}
-
-/* Mantenemos las 4 columnas solicitadas [cite: 2025-10-27] */
-.col-item { 
-    width: calc(25% - 15px) !important; 
-    min-width: 220px; 
-    margin-bottom: 20px; 
-}
-
-/* --- TARJETAS DE PRODUCTO CON BORDES NEGROS --- */
-.menu-card { 
-    background: #ffffff !important;      
-    color: #000000 !important; 
-    border: 2px solid #000000 !important; /* Borde negro definido */
-    border-radius: 12px !important; 
-    overflow: hidden; 
+/* --- GRILLA Y TARJETAS (4 COLUMNAS) --- */
+.card {
+    background-color: var(--blanco) !important;
+    color: var(--negro-puro) !important;
+    border: 2px solid var(--negro-puro) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
     height: 100%;
 }
 
-/* --- IMÁGENES --- */
-.menu-item-image { 
-    height: 250px; 
-    object-fit: cover; 
-    width: 100%; 
-    border-bottom: 2px solid #000000 !important; /* Línea divisoria negra */
-    display: block;
+.card-title { 
+    color: var(--negro-puro) !important; 
+    font-weight: 800 !important; 
+    font-size: 1.1rem;
 }
 
-/* --- PRECIOS --- */
-.price { 
-    font-size: 1.4rem !important; 
-    font-weight: 900 !important; 
-    color: #000000 !important; /* Precio en negro resaltado */
+.text-warning { 
+    color: #d35400 !important; 
+    font-size: 1.3rem !important; 
+    font-weight: 900 !important;
 }
 
-/* --- BOTÓN FLOTANTE --- */
-.btn-mozo {
-    position: fixed; 
-    bottom: 25px; 
-    right: 25px; 
-    width: 65px; 
-    height: 65px;
-    border-radius: 50%; 
-    background: #ffc107 !important; 
-    border: 3px solid #000000 !important; 
-    color: #000000 !important;
-    z-index: 999; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Botón "Agregar" */
+.btn-primary {
+    background-color: var(--negro-puro) !important;
+    border: none !important;
+    font-weight: bold !important;
+    color: white !important;
+    padding: 8px !important;
 }
 
-/* --- RESPONSIVE --- */
-@media (max-width: 992px) { 
-    .col-item { width: calc(50% - 10px) !important; } 
+/* --- MODAL CARRITO --- */
+.modal-content {
+    background-color: var(--blanco) !important;
+    color: var(--negro-puro) !important;
+    border: 4px solid var(--negro-puro) !important;
+    border-radius: 15px !important;
 }
 
-@media (max-width: 576px) { 
-    .col-item { width: 100% !important; } 
+.modal-header { border-bottom: 2px solid var(--negro-puro); }
+.modal-footer { border-top: 2px solid var(--negro-puro); }
+
+.list-group-item {
+    background-color: var(--blanco) !important;
+    color: var(--negro-puro) !important;
+    border-color: #ddd !important;
+    font-weight: bold;
 }

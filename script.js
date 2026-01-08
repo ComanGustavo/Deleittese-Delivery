@@ -1,7 +1,32 @@
-const menuData = [
-    // --- EMPANADAS ---
-   
+// ==========================================
+// CONFIGURACIÓN DE FIREBASE
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyB-EjyP-L-L-L-L-L-L-L-L-L-L",
+    authDomain: "deleittese-delivery.firebaseapp.com",
+    databaseURL: "https://deleittese-delivery-default-rtdb.firebaseio.com",
+    projectId: "deleittese-delivery",
+    storageBucket: "deleittese-delivery.appspot.com",
+    messagingSenderId: "324343076188",
+    appId: "1:324343076188:web:8258cca8db166804b01d99"
+};
 
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const database = firebase.database();
+
+// ==========================================
+// CONSTANTES
+// ==========================================
+let carrito = [];
+const COSTO_ENVIO = 1800;
+const TEL_LOCAL = "5493644146872";
+
+// ==========================================
+// DATOS DEL MENÚ
+// ==========================================
+const menuData = [
     // --- PAPAS FRITAS ---
     { id: 2, name: "Papas Fritas Chica", price: "4.000", category: "Papas Fritas", icon: "🍟", image: "imagen/img58.jpeg", stock: true }, 
     { id: 3, name: "Papas Fritas Mediana", price: "5.000", category: "Papas Fritas", icon: "🍟", image: "imagen/img57.jpeg", stock: true },
@@ -87,216 +112,149 @@ const menuData = [
     { id: 30, name: "Picada para 2", price: "25.000", category: "Picadas", icon: "🧀", image: "imagen/img15.jpeg", stock: true },
     { id: 311, name: "Picada Familiar", price: "30.000", category: "Picadas", icon: "🧀", image: "imagen/img16.jpeg", stock: true }
 ];
-
-let carrito = [];
-const COSTO_ENVIO = 1800;
-
-document.addEventListener('DOMContentLoaded', () => {
+// ==========================================
+// RENDERIZADO
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
     displayMenu();
     setupCategoryButtons();
 });
 
-function displayMenu(category = 'Todas') {
-    const menuContainer = document.getElementById('menu-list');
-    if (!menuContainer) return;
-    menuContainer.innerHTML = '';
-
-    const filtered = category === 'Todas' ? menuData : menuData.filter(i => i.category === category);
-
-    filtered.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'col-item mb-4';
-        div.innerHTML = `
-            <div class="card menu-card h-100 ${item.stock ? '' : 'sin-stock'}">
-                <img src="${item.image}" class="card-img-top menu-item-image" alt="${item.name}" onerror="this.src='imagen/placeholder.jpg'">
-                <div class="card-body d-flex flex-column text-center p-2">
-                    <h6 class="card-title fw-bold small" onclick="toggleStock(${item.id})">${item.icon} ${item.name}</h6>
-                    <p class="price mt-auto">$${item.price}</p>
-                    <button class="btn ${item.stock ? 'btn-dark' : 'btn-secondary disabled'} btn-sm w-100" 
-                            onclick="agregarAlCarrito(${item.id})">
-                        ${item.stock ? 'Agregar' : 'AGOTADO'}
-                    </button>
+function displayMenu(category = "Todos") {
+    const contenedor = document.getElementById("menu-list");
+    if (!contenedor) return;
+    const productosFiltrados = category === "Todos" ? menuData : menuData.filter(p => p.category === category);
+    contenedor.innerHTML = "";
+    productosFiltrados.forEach(p => {
+        contenedor.innerHTML += `
+            <div class="col">
+                <div class="card h-100 shadow-sm border-dark">
+                    <img src="${p.image}" class="card-img-top" alt="${p.name}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">${p.icon} ${p.name}</h5>
+                        <p class="card-text text-success fs-5 fw-bold">$${p.price}</p>
+                        <button class="btn btn-primary w-100" onclick="agregarAlCarrito(${p.id})">
+                            <i class="fas fa-plus me-2"></i>Agregar
+                        </button>
+                    </div>
                 </div>
             </div>`;
-        menuContainer.appendChild(div);
     });
 }
 
-window.agregarAlCarrito = (id) => {
-    const prod = menuData.find(i => i.id === id);
-    if (!prod || !prod.stock) return;
+function setupCategoryButtons() {
+    const btnContainer = document.getElementById("category-buttons");
+    if (!btnContainer) return;
+    const categorias = ["Todos", ...new Set(menuData.map(p => p.category))];
+    btnContainer.innerHTML = "";
+    categorias.forEach(cat => {
+        btnContainer.innerHTML += `<button class="btn btn-outline-dark btn-sm fw-bold mx-1 mb-2" onclick="displayMenu('${cat}')">${cat}</button>`;
+    });
+}
 
-    const existente = carrito.find(i => i.id === id);
-    if (existente) {
-        existente.cantidad++;
-    } else {
-        carrito.push({ ...prod, cantidad: 1 });
-    }
-    actualizarInterfaz();
-};
-
-window.actualizarCantidad = (index, delta) => {
-    carrito[index].cantidad += delta;
-    if (carrito[index].cantidad <= 0) {
-        carrito.splice(index, 1);
-    }
-    actualizarInterfaz();
-};
-
-window.eliminarDelCarrito = (index) => {
-    carrito.splice(index, 1);
+// ==========================================
+// CARRITO
+// ==========================================
+window.agregarAlCarrito = id => {
+    const p = menuData.find(i => i.id === id);
+    const e = carrito.find(i => i.id === id);
+    e ? e.cantidad++ : carrito.push({ ...p, cantidad: 1 });
     actualizarInterfaz();
 };
 
 function actualizarInterfaz() {
-    const count = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-    const cartCountEl = document.getElementById('cart-count');
-    if (cartCountEl) cartCountEl.innerText = count;
-
-    const lista = document.getElementById('lista-carrito');
+    const lista = document.getElementById("lista-carrito");
+    const contador = document.getElementById("cart-count");
     if (!lista) return;
-
-    lista.innerHTML = '';
-    let subtotal = 0;
-
-    carrito.forEach((item, index) => {
-        const precioLimpio = parseInt(item.price.replace(/\./g, ''));
-        subtotal += precioLimpio * item.cantidad;
-
+    lista.innerHTML = "";
+    let total = 0;
+    let cantTotal = 0;
+    carrito.forEach((i, idx) => {
+        const precio = parseInt(i.price.replace(/\./g, ""));
+        total += precio * i.cantidad;
+        cantTotal += i.cantidad;
         lista.innerHTML += `
-            <li class="list-group-item d-flex justify-content-between align-items-center bg-dark text-white border-secondary">
-                <div style="width: 50%">${item.name}</div>
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-sm btn-outline-warning" onclick="actualizarCantidad(${index}, -1)">-</button>
-                    <span class="mx-2">${item.cantidad}</span>
-                    <button class="btn btn-sm btn-outline-warning" onclick="actualizarCantidad(${index}, 1)">+</button>
-                    <button class="btn btn-sm btn-danger ms-3" onclick="eliminarDelCarrito(${index})"><i class="fas fa-trash"></i></button>
-                </div>
-            </li>`;
+        <li class="list-group-item d-flex justify-content-between align-items-center border-dark">
+            <div><span class="fw-bold">${i.cantidad}x</span> ${i.name}</div>
+            <button class="btn btn-danger btn-sm" onclick="eliminarDelCarrito(${idx})"><i class="fas fa-trash"></i></button>
+        </li>`;
     });
-
-    if (carrito.length > 0) {
-        lista.innerHTML += `
-            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-info mt-2">
-                <div><strong>Envío</strong></div>
-                <div>$${COSTO_ENVIO.toLocaleString('es-AR')}</div>
-            </li>`;
-    }
-
-    const totalFinal = subtotal > 0 ? subtotal + COSTO_ENVIO : 0;
-    document.getElementById('total-pago').innerText = `$${totalFinal.toLocaleString('es-AR')}`;
-
-    const selectorPago = document.getElementById('forma-pago');
-    const cuadroAlias = document.getElementById('contenedor-alias');
-    if (selectorPago && cuadroAlias) {
-        cuadroAlias.style.display = (selectorPago.value === "Transferencia") ? 'block' : 'none';
-    }
+    if(contador) contador.innerText = cantTotal;
+    const metodo = document.getElementById("metodo-entrega")?.value;
+    const envio = metodo === "Envio" ? COSTO_ENVIO : 0;
+    const totalElem = document.getElementById("total-pago");
+    if(totalElem) totalElem.innerText = `$${(total + envio).toLocaleString("es-AR")}`;
 }
 
-window.enviarPedidoWhatsApp = () => {
+window.eliminarDelCarrito = i => { carrito.splice(i, 1); actualizarInterfaz(); };
+
+window.cambioMetodoEntrega = () => {
+    const metodo = document.getElementById("metodo-entrega").value;
+    const aviso = document.getElementById("aviso-envio");
+    const inputDir = document.getElementById("cliente-dir");
+    if(metodo === "Retiro") {
+        aviso.innerText = "Retiro sin costo adicional";
+        inputDir.placeholder = "Retiro en local (opcional)";
+    } else {
+        aviso.innerText = "El envío tiene un costo adicional de $1.800";
+        inputDir.placeholder = "Dirección de entrega";
+    }
+    actualizarInterfaz();
+};
+
+// ==========================================
+// ENVÍO Y ADMIN
+// ==========================================
+window.enviarAlPanelAdmin = () => {
     const nombre = document.getElementById('cliente-nombre').value;
     const tel = document.getElementById('cliente-tel').value;
-    const dir = document.getElementById('cliente-dir').value;
+    const direccion = document.getElementById('cliente-dir').value || "Retiro en Local";
     const pago = document.getElementById('forma-pago').value;
+    const nota = document.getElementById('cliente-nota').value;
     const total = document.getElementById('total-pago').innerText;
 
-    if (!nombre || !dir || !tel) return alert("Completa tus datos de envío.");
-    if (carrito.length === 0) return alert("El carrito está vacío.");
+    if (!nombre || !tel || carrito.length === 0) {
+        alert("⚠️ Completa nombre, teléfono y agrega productos.");
+        return;
+    }
 
-    let mensaje = `*TICKET DE PEDIDO - WEB DELICATTESE*\n`;
-    mensaje += `------------------------------------------\n`;
-    mensaje += `CLIENTE: ${nombre.toUpperCase()}\n`;
-    mensaje += `DIRECCIÓN: ${dir.toUpperCase()}\n`;
-    mensaje += `TELÉFONO: ${tel}\n`;
-    mensaje += `PAGO: ${pago}\n`;
-    mensaje += `------------------------------------------\n\n`;
-    mensaje += `*DETALLE DEL PEDIDO:*\n`;
+    const nuevoPedido = {
+        cliente: nombre,
+        telefono: tel,
+        direccion: direccion,
+        pago: pago,
+        nota: nota,
+        items: carrito.map(item => ({ nombre: item.name, cant: item.cantidad })),
+        total: total,
+        fecha: new Date().toLocaleString(),
+        estado: "Pendiente"
+    };
 
-    carrito.forEach(item => {
-        mensaje += `*${item.cantidad} x ${item.name.toUpperCase()}*\n`;
-    });
-
-    mensaje += `\n------------------------------------------\n`;
-    mensaje += `*TOTAL A PAGAR: ${total}*\n`;
-    mensaje += `------------------------------------------\n`;
-
-    if (pago === "Transferencia") mensaje += `\n*ESPERANDO COMPROBANTE*\nAlias: facu.deleittese`;
-
-    const numeroDuenio = "5493644679057"; 
-    window.open(`https://wa.me/${numeroDuenio}?text=${encodeURIComponent(mensaje)}`, '_blank');
-
-    carrito = [];
-    actualizarInterfaz();
-    document.querySelectorAll('input').forEach(i => i.value = '');
-    bootstrap.Modal.getInstance(document.getElementById('modalCarrito')).hide();
+    database.ref("pedidos").push(nuevoPedido)
+        .then(() => {
+            alert("✅ ¡Pedido enviado con éxito al panel!");
+            carrito = [];
+            actualizarInterfaz();
+            const modalElem = document.getElementById('modalCarrito');
+            const modal = bootstrap.Modal.getInstance(modalElem);
+            if (modal) modal.hide();
+        })
+        .catch(err => alert("Error: " + err));
 };
 
-window.imprimirTicket = () => {
-    const nombre = document.getElementById('cliente-nombre').value || "S/N";
-    const dir = document.getElementById('cliente-dir').value || "S/D";
-    const total = document.getElementById('total-pago').innerText;
-
-    let ticketHTML = `
-        <div style="font-family: monospace; width: 300px; text-align: center;">
-            <h2>WEB DELICATTESE</h2>
-            <p>-------------------------</p>
-            <p style="text-align: left;">CLIENTE: ${nombre}</p>
-            <p style="text-align: left;">DIR: ${dir}</p>
-            <p>-------------------------</p>
-            <table style="width: 100%; text-align: left;">
-    `;
-
-    carrito.forEach(item => {
-        ticketHTML += `<tr><td>${item.cantidad} x ${item.name}</td></tr>`;
-    });
-
-    ticketHTML += `
-            </table>
-            <p>-------------------------</p>
-            <h3 style="text-align: right;">TOTAL: ${total}</h3>
-            <p>-------------------------</p>
-            <p>¡Gracias por su compra!</p>
-        </div>
-    `;
-
-    const ventana = window.open('', '_blank');
-    ventana.document.write(ticketHTML);
-    ventana.print();
-    ventana.close();
+window.enviarPorWhatsApp = () => {
+    if (carrito.length === 0) return alert("El carrito está vacío");
+    let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
+    carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
+    msg += `%0A*TOTAL:* ${document.getElementById("total-pago").innerText}`;
+    window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
 };
 
-window.modoAdmin = () => {
-    const pass = prompt("Acceso Administrador:");
-    if (pass === "1234") {
-        document.body.classList.toggle("admin-active");
-        alert("Modo Admin Activo. Toca los nombres de los platos para pausar stock.");
+window.accesoAdmin = () => {
+    const clave = prompt("Ingrese la clave de administrador:");
+    if (clave === "deleittese2026") {
+        window.location.href = "admin.html"; 
+    } else {
+        alert("Clave incorrecta.");
     }
 };
-
-window.toggleStock = (id) => {
-    if (!document.body.classList.contains("admin-active")) return;
-    const p = menuData.find(i => i.id === id);
-    if (p) {
-        p.stock = !p.stock;
-        displayMenu();
-    }
-};
-
-function setupCategoryButtons() {
-    const cats = ['Todas', ...new Set(menuData.map(i => i.category))];
-    const catContainer = document.getElementById('category-buttons');
-    if (!catContainer) return;
-
-    catContainer.innerHTML = '';
-    cats.forEach(c => {
-        const b = document.createElement('button');
-        b.className = `btn ${c === 'Todas' ? 'btn-light' : 'btn-outline-light'} btn-sm px-3 me-2 mb-2`;
-        b.innerText = c;
-        b.onclick = () => {
-            displayMenu(c);
-            document.querySelectorAll('#category-buttons button').forEach(btn => btn.classList.replace('btn-light', 'btn-outline-light'));
-            b.classList.replace('btn-outline-light', 'btn-light');
-        };
-        catContainer.appendChild(b);
-    });
-}
