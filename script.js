@@ -245,23 +245,22 @@ window.enviarAlPanelAdmin = () => {
 window.enviarPorWhatsApp = () => {
     if (carrito.length === 0) return alert("El carrito está vacío");
 
-    // Buscamos los datos en el HTML
-    const elNombre = document.getElementById('cliente-nombre');
-    const elTotal = document.getElementById("total-pago");
-    
-    // Si no encuentra los elementos, pone valores por defecto para que no se trabe
-    const nombre = elNombre ? elNombre.value : "Cliente";
-    const total = elTotal ? elTotal.innerText : "$0";
+    // Capturamos los datos del formulario (Asegúrate que los IDs coincidan)
+    const nombre = document.getElementById('cliente-nombre').value || "Cliente";
+    const direccion = document.getElementById('cliente-direccion').value || "Retira en local"; // Nuevo campo
+    const total = document.getElementById("total-pago").innerText || "$0";
     
     let itemsTexto = "";
     carrito.forEach(i => itemsTexto += `${i.cantidad}x ${i.name}, `);
 
-    // USAMOS TU URL REAL DE GITHUB
     const urlBase = "https://comangustavo.github.io/Deleittese-Delivery";
-    // Busca esta línea y reemplázala:
-    const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
+    
+    // USAMOS encodeURIComponent para que la dirección y el nombre NO rompan el link
+    const linkTicket = `${urlBase}/ticket.html?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsTexto)}&total=${encodeURIComponent(total)}`;
 
     let msg = `*NUEVO PEDIDO - DELEITTESE*%0A`;
+    msg += `*Cliente:* ${nombre}%0A`;
+    msg += `*Dirección:* ${direccion}%0A%0A`;
     carrito.forEach(i => msg += `- ${i.cantidad}x ${i.name}%0A`);
     msg += `%0A*TOTAL:* ${total}`;
     msg += `%0A%0A*IMPRIMIR TICKET AQUÍ:*%0A${linkTicket}`; 
