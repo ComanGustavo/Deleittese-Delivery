@@ -20,7 +20,7 @@ const database = firebase.database();
 // CONSTANTES
 // ==========================================
 let carrito = [];
-const COSTO_ENVIO = 1800;
+const COSTO_ENVIO = 1.800;
 const TEL_LOCAL = "5493644146872";
 
 // ==========================================
@@ -39,7 +39,7 @@ const menuData = [
     { id: 8, name: "Triple Frío de Verduras con Jamón y Queso", price: "7.000", category: "Sándwiches de Migas", icon: "🥪", image: "imagen/img7.jpeg", stock: true },
     { id: 44, name: "Triple Tostado con Verduras", price: "7.000", category: "Sándwiches de Migas", icon: "🥪", image: "imagen/img65.jpeg", stock: true },
     { id: 43, name: "Miga con Jamón y Queso", price: "6.000", category: "Sándwiches de Migas", icon: "🥪", image: "imagen/img64.jpeg", stock: true },
-    { id: 47, name: "Psicodélico con Papas", price: "23.000", category: "Sándwiches de Migas", icon: "🥪", image: "imagen/img70.jpeg", stock: true },
+    { id: 47, name: "Psicodelico con Papas", price: "23.000", category: "Sándwiches de Migas", icon: "🥪", image: "imagen/img70.jpeg", stock: true },
 
     // --- PIZZAS ---
     { id: 9, name: "Pizza Muzzarella", price: "12.000", category: "Pizzas", icon: "🍕", image: "imagen/img31.jpeg", stock: true }, 
@@ -69,11 +69,11 @@ const menuData = [
     { id: 32, name: "Hamburguesa al Plato", price: "12.000", category: "Hamburguesas", icon: "🍔", image: "imagen/img50.jpeg", stock: true },
 
     // --- SÁNDWICHES DE MILA ---
-    { id: 20, name: "Sándwich Milanesa de Carne Simple + Papas (Económico)", price: "12.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img26.jpeg", stock: true },
-    { id: 62, name: "Sándwich Milanesa de Carne Simple + Papas (Premium)", price: "15.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
-    { id: 21, name: "Sándwich Milanesa de Pollo Especial + Papas (Premium)", price: "19.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
-    { id: 211, name: "Sándwich Milanesa de Carne (Especial)", price: "17.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
-    { id: 212, name: "Sándwich Milanesa de Pollo (Simple)", price: "15.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
+    { id: 20, name: "Sandwich Milanesa de Carne Simple + Papas (Económico)", price: "12.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img26.jpeg", stock: true },
+    { id: 62, name: "Sandwich Milanesa de Carne Simple + Papas (Premium)", price: "15.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
+    { id: 21, name: "Sandwich Milanesa de Pollo Especial + Papas (Premium)", price: "19.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
+    { id: 211, name: "Sandwich Milanesa de Carne (Especial)", price: "17.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
+    { id: 212, name: "Sandwich Milanesa de Pollo (Simple)", price: "15.000", category: "Sándwiches de Mila", icon: "🥪", image: "imagen/img.jpeg", stock: true },
 
     // --- LOMOS ---
     { id: 22, name: "Lomo simple + Papas (Premium)", price: "19.000", category: "Lomos", icon: "🥩", image: "imagen/img25.jpeg", stock: true }, 
@@ -104,11 +104,11 @@ const menuData = [
     { id: 82, name: "Media Picada Clásica 4", price: "16.000", category: "Picadas", icon: "🧀", image: "imagen/img81.jpeg", stock: true },
     { id: 31, name: "Picada Completa", price: "32.000", category: "Picadas", icon: "🧀", image: "imagen/img16.jpeg", stock: true },
     { id: 42, name: "Picada 2", price: "15.000", category: "Picadas", icon: "🧀", image: "imagen/img63.jpeg", stock: true },
-    { id: 86, name: "Picada Clásica", price: "28.000", category: "Picadas", icon: "🧀", image: "imagen/img88.jpeg", stock: true },
-    { id: 87, name: "Picada Clásica Completa", price: "32.000", category: "Picadas", icon: "🧀", image: "imagen/img88.jpeg", stock: true },
-    { id: 85, name: "Picada Clásica 1", price: "25.000", category: "Picadas", icon: "🧀", image: "imagen/img87.jpeg", stock: true },
-    { id: 49, name: "Picada Clásica 3", price: "26.000", category: "Picadas", icon: "🧀", image: "imagen/img72.jpeg", stock: true },
-    { id: 84, name: "Picada Clásica 4", price: "28.000", category: "Picadas", icon: "🧀", image: "imagen/img86.jpeg", stock: true },
+    { id: 86, name: "Picada Clasica", price: "28.000", category: "Picadas", icon: "🧀", image: "imagen/img88.jpeg", stock: true },
+    { id: 87, name: "Picada Clasica Completa", price: "32.000", category: "Picadas", icon: "🧀", image: "imagen/img88.jpeg", stock: true },
+    { id: 85, name: "Picada Clasica 1", price: "25.000", category: "Picadas", icon: "🧀", image: "imagen/img87.jpeg", stock: true },
+    { id: 49, name: "Picada Clasica 3", price: "26.000", category: "Picadas", icon: "🧀", image: "imagen/img72.jpeg", stock: true },
+    { id: 84, name: "Picada Clasica 4", price: "28.000", category: "Picadas", icon: "🧀", image: "imagen/img86.jpeg", stock: true },
     { id: 30, name: "Picada para 2", price: "25.000", category: "Picadas", icon: "🧀", image: "imagen/img15.jpeg", stock: true },
     { id: 311, name: "Picada Familiar", price: "30.000", category: "Picadas", icon: "🧀", image: "imagen/img16.jpeg", stock: true }
 ];
