@@ -89,29 +89,46 @@
         <p>Deleittese 2026</p>
     </div>
 
-    <script>
+   <script>
+    // ESTA FUNCIÓN ELIMINA LOS SÍMBOLOS RAROS PARA LA IMPRESORA
+    function limpiarTexto(texto) {
+        if (!texto) return "";
+        return texto
+            .normalize("NFD")                  // Separa la letra de la tilde
+            .replace(/[\u0300-\u036f]/g, "")   // Borra la tilde (ej: é -> e)
+            .replace(/[¡¿!?:#]/g, "")          // Borra signos que confunden a la impresora
+            .replace(/[^\x00-\x7F]/g, "")      // Borra cualquier otro símbolo extraño
+            .toUpperCase();                    // Todo a MAYÚSCULAS para máxima claridad
+    }
+
     function renderTicket() {
         const params = new URLSearchParams(window.location.search);
         
-        const itemsRaw = params.get('items') ?? 'Sin productos';
+        // 1. Procesamos y limpiamos los productos
+        const itemsRaw = params.get('items') ?? 'SIN PRODUCTOS';
         const productosArray = itemsRaw.split('\n'); 
         
         let detalleHTML = "";
         productosArray.forEach(prod => {
             if(prod.trim() !== "") {
-                detalleHTML += `<div class="item-pedido">${prod.trim()}</div>`;
+                // Limpiamos cada plato (ej: Psicodelico)
+                detalleHTML += `<div class="item-pedido">${limpiarTexto(prod.trim())}</div>`;
             }
         });
 
-        const nota = params.get('nota') || "";
-        const obsHTML = nota.trim() !== "" 
-            ? `<div class="obs-destacada">ATENCIÓN: ${nota}</div>` 
-            : `<div class="dato">Sin observaciones adicionales.</div>`;
+        // 2. Procesamos y limpiamos las notas/obs
+        const notaRaw = params.get('nota') || "";
+        const notaLimpia = limpiarTexto(notaRaw);
+        
+        const obsHTML = notaLimpia.trim() !== "" 
+            ? `<div class="obs-destacada">ATENCION: ${notaLimpia}</div>` 
+            : `<div class="dato">SIN OBSERVACIONES ADICIONALES.</div>`;
 
+        // 3. Armamos el HTML con datos limpios
         const html = `
-            <div class="dato"><b>CLIENTE:</b> ${params.get('cliente') ?? 'N/A'}</div>
+            <div class="dato"><b>CLIENTE:</b> ${limpiarTexto(params.get('cliente') ?? 'N/A')}</div>
             <div class="dato"><b>TEL:</b> ${params.get('tel') ?? 'N/A'}</div>
-            <div class="dato"><b>DIR:</b> ${params.get('dir') ?? 'Retiro'}</div>
+            <div class="dato"><b>DIR:</b> ${limpiarTexto(params.get('dir') ?? 'RETIRO')}</div>
             <div class="linea"></div>
             
             <div style="font-size: 10px; margin-bottom: 5px;">DETALLE DEL PEDIDO:</div>
@@ -121,7 +138,7 @@
             ${obsHTML}
             <div class="linea"></div>
             
-            <div class="dato"><b>ENVÍO:</b> $${params.get('envio') ?? '0'}</div>
+            <div class="dato"><b>ENVIO:</b> $${params.get('envio') ?? '0'}</div>
             <div class="total-box">TOTAL: $${params.get('total') ?? '0'}</div>
         `;
         
@@ -130,8 +147,9 @@
 
     window.onload = () => {
         renderTicket();
+        // Esperamos un poco para que el navegador procese el texto limpio
         setTimeout(() => { window.print(); }, 800);
     };
-    </script> 
+</script>
 </body>
 </html>
