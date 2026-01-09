@@ -5,62 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Deleittese</title>
     <style>
-        /* CONFIGURACIÓN TICKETERA 58mm */
+        /* CONFIGURACIÓN ANCHA DE AYER (58mm) */
         body {
             font-family: 'Courier New', monospace;
-            width: 50mm; 
+            width: 58mm; /* Volvemos al ancho que te funcionó ayer [cite: 2025-12-30] */
             margin: 0;
-            padding: 2mm;
+            padding: 0; /* Eliminamos el padding para que no se desplace a la izquierda */
             color: #000;
             background: #fff;
         }
 
-        .text-center { text-align: center; }
-        h2 { font-size: 16px; margin: 4px 0; text-transform: uppercase; }
-        p { font-size: 11px; margin: 2px 0; }
+        .text-center { text-align: center; width: 100%; }
+        h2 { font-size: 18px; margin: 10px 0 5px 0; text-transform: uppercase; }
+        
+        /* Espacio superior para que no se corte arriba */
+        .margen-superior { height: 15px; } 
 
-        .linea { border-top: 1px dashed #000; margin: 5px 0; }
+        .linea { border-top: 1px dashed #000; margin: 5px 0; width: 100%; }
 
-        .dato { font-size: 11px; margin: 2px 0; word-wrap: break-word; }
+        .dato { font-size: 12px; margin: 3px 0; padding-left: 2px; }
 
-        /* SECCIÓN PRODUCTOS: Nombre a la izquierda, Precio a la derecha */
         .item-pedido {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold; 
-            margin: 4px 0;
+            margin: 5px 0;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap; /* Evita que se corte si el nombre es largo [cite: 2025-12-30] */
+            padding: 0 2px;
         }
 
-        .item-nombre { flex: 1; padding-right: 4px; }
-
         .obs-destacada {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            background-color: #000;
-            color: #fff;
-            padding: 4px;
-            margin-top: 5px;
+            border: 2px solid #000; /* Usamos recuadro en lugar de fondo negro para asegurar visibilidad */
+            padding: 5px;
+            margin: 10px 0;
             text-align: center;
-            text-transform: uppercase;
         }
 
         .total-box {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: bold;
-            margin-top: 8px;
+            margin-top: 10px;
             text-align: right;
+            padding-right: 2px;
         }
 
         @media print {
-            body { width: 50mm; }
+            body { width: 58mm; margin: 0; }
             @page { margin: 0; }
         }
     </style>
 </head>
 <body>
+    <div class="margen-superior"></div>
 
     <div class="text-center">
         <h2>DELEITTESE</h2>
@@ -68,89 +66,66 @@
     </div>
 
     <div class="linea"></div>
-
-    <div id="contenedor-datos">
-        </div>
-
+    <div id="contenedor-datos"></div>
     <div class="linea"></div>
 
     <div class="text-center">
-        <p style="font-weight: bold; font-size: 12px;">¡Gracias por su compra!</p>
+        <p style="font-weight: bold; font-size: 14px; margin-top: 10px;">¡Gracias por su compra!</p>
     </div>
 
     <script>
     function limpiarTexto(texto) {
         if (!texto) return "";
-        return texto
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[¡¿!:#]/g, "")
-            .toUpperCase();
+        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     }
 
     function renderTicket() {
         const params = new URLSearchParams(window.location.search);
-        const nroTicket = params.get('id') || "000";
-
-        // Procesar Productos
-        const itemsRaw = params.get('items') || 'SIN PRODUCTOS';
-        const productosArray = itemsRaw.split('\n'); 
         
+        // Procesar Productos
+        const itemsRaw = params.get('items') || '';
+        const productosArray = itemsRaw.split('\n'); 
         let detalleHTML = "";
+
         productosArray.forEach(prod => {
             if(prod.trim() !== "") {
                 let partes = prod.split(' - ');
-                let nombre = partes[0];
-                let precio = partes[1] || ""; 
-
                 detalleHTML += `
                     <div class="item-pedido">
-                        <span class="item-nombre">${limpiarTexto(nombre)}</span>
-                        <span>${precio}</span>
+                        <span>${limpiarTexto(partes[0])}</span>
+                        <span>${partes[1] || ""}</span>
                     </div>`;
             }
         });
 
-        const notaRaw = params.get('nota') || "";
-        const notaLimpia = limpiarTexto(notaRaw);
-        const obsHTML = notaLimpia.trim() !== "" 
-            ? `<div class="obs-destacada">ATENCION: ${notaLimpia}</div>` 
+        const nota = params.get('nota') || "";
+        const obsHTML = nota.trim() !== "" 
+            ? `<div class="obs-destacada">ATENCION: ${limpiarTexto(nota)}</div>` 
             : `<div class="dato">SIN OBSERVACIONES.</div>`;
 
         const html = `
             <div class="text-center">
-                <p style="font-size: 14px; font-weight: bold; margin: 0;">TICKET: #${nroTicket}</p>
+                <p style="font-size: 16px; font-weight: bold;">TICKET: #${params.get('id')}</p>
             </div>
             <div class="linea"></div>
-
             <div class="dato"><b>CLIENTE:</b> ${limpiarTexto(params.get('cliente'))}</div>
-            <div class="dato"><b>TEL:</b> ${params.get('tel') || 'N/A'}</div>
+            <div class="dato"><b>TEL:</b> ${params.get('tel')}</div>
             <div class="dato"><b>DIR:</b> ${limpiarTexto(params.get('dir'))}</div>
             <div class="linea"></div>
-            
-            <div style="font-size: 10px; margin-bottom: 5px;">PRODUCTOS:</div>
             ${detalleHTML} 
-            
             <div class="linea"></div>
             ${obsHTML}
             <div class="linea"></div>
-            
-            <div class="dato"><b>ENVIO:</b> $${params.get('envio') || '0'}</div>
-            <div class="total-box">TOTAL: $${params.get('total') || '0'}</div>
+            <div class="dato"><b>ENVIO:</b> $${params.get('envio')}</div>
+            <div class="total-box">TOTAL: $${params.get('total')}</div>
         `;
-        
         document.getElementById("contenedor-datos").innerHTML = html;
     }
 
-    // UN SOLO ONLOAD PARA TODO
     window.onload = () => {
         renderTicket();
-        // Espera un momento para que el navegador dibuje el ticket y luego abre la impresora [cite: 2025-12-29]
-        setTimeout(() => { 
-            window.print(); 
-        }, 600);
+        setTimeout(() => { window.print(); }, 500);
     };
     </script>
-
 </body>
 </html>
