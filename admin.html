@@ -146,12 +146,12 @@ ${centrar("¡Gracias por elegirnos!")}`;
         Object.keys(pedidos).reverse().forEach(id => {
             const p = pedidos[id];
             // Busca esto dentro de database.ref('pedidos').on('value', ...)
-let itemsHtml = "";
-if (Array.isArray(p.items)) {
-    itemsHtml = p.items.map(i => `<li>• ${i.cant} x ${i.nombre}</li>`).join('');
-} else {
+        let itemsHtml = "";
+        if (Array.isArray(p.items)) {
+         itemsHtml = p.items.map(i => `<li>• ${i.cant} x ${i.nombre}</li>`).join('');
+        } else {
     // Si es el texto largo que enviamos ("1x Producto - $7000")
-    itemsHtml = p.items.split('\n').map(linea => {
+        itemsHtml = p.items.split('\n').map(linea => {
         if (linea.includes(" - ")) {
             let [nombre, precio] = linea.split(" - ");
             return `<li>• ${nombre} <strong class="text-success">${precio}</strong></li>`;
@@ -196,7 +196,27 @@ if (Array.isArray(p.items)) {
     
     function reimprimir(id) {
         database.ref('pedidos/' + id).once('value').then(s => {
-            descargarArchivoTicket(s.val(), id); 
+            const pedido = s.val();
+            if (pedido) {
+                // Preparamos los datos para el ticket visual
+                const urlBase = "ticket.html";
+                const params = new URLSearchParams({
+                    id: id.substring(id.length - 4).toUpperCase(),
+                    cliente: pedido.cliente,
+                    tel: pedido.telefono || "N/A",
+                    dir: pedido.direccion,
+                    items: pedido.items,
+                    envio: pedido.envio || 0,
+                    total: pedido.total,
+                    nota: pedido.nota || ""
+                });
+                
+                // Abre la ventana de impresión profesional
+                window.open(`${urlBase}?${params.toString()}`, '_blank');
+                
+                // Marca como impreso en Firebase para que el dueño lo vea
+                database.ref('pedidos/' + id).update({ impreso: true });
+            }
         });
     }
 </script>
