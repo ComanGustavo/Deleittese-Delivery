@@ -259,4 +259,33 @@ function imprimirPedidoManual(id) {
             alert("Error: No se encontró el pedido o la función de ticket.");
         }
     });
+
+
+    // ==========================================
+// ACCESO Y UTILIDADES
+// ==========================================
+
+window.accesoAdmin = () => {
+    const clave = prompt("Ingrese la clave:");
+    if (clave === "deleittese2026") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Incorrecto");
+    }
+};
+
+function generarTicket(pedido) {
+    const urlBase = "ticket.html";
+    const params = new URLSearchParams({
+        cliente: pedido.cliente,
+        tel: pedido.telefono || "Sin Teléfono",
+        dir: pedido.direccion,
+        items: pedido.items,
+        subtotal: pedido.subtotal || 0,
+        envio: pedido.envio || 0,
+        total: pedido.total,
+        nota: pedido.nota || ""
+    });
+    window.open(`${urlBase}?${params.toString()}`, '_blank');
+}
 }
