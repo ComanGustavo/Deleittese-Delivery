@@ -88,8 +88,9 @@
     <div class="text-center">
         <p>Deleittese 2026</p>
     </div>
-<script>
-    // ESTA FUNCIÓN ELIMINA LOS SÍMBOLOS RAROS PARA LA IMPRESORA TÉRMICA
+
+   <script>
+    // ESTA FUNCIÓN ELIMINA LOS SÍMBOLOS RAROS PARA LA IMPRESORA
     function limpiarTexto(texto) {
         if (!texto) return "";
         return texto
@@ -103,19 +104,19 @@
     function renderTicket() {
         const params = new URLSearchParams(window.location.search);
         
-        // 1. Procesamos y limpiamos los productos para la cocina
+        // 1. Procesamos y limpiamos los productos
         const itemsRaw = params.get('items') ?? 'SIN PRODUCTOS';
         const productosArray = itemsRaw.split('\n'); 
         
         let detalleHTML = "";
         productosArray.forEach(prod => {
             if(prod.trim() !== "") {
-                // Limpiamos cada plato (ej: PSICODELICO) [cite: 2025-12-30]
-                detalleHTML += `<div class="item-pedido">>> ${limpiarTexto(prod.trim())}</div>`;
+                // Limpiamos cada plato (ej: Psicodelico)
+                detalleHTML += `<div class="item-pedido">${limpiarTexto(prod.trim())}</div>`;
             }
         });
 
-        // 2. Procesamos y limpiamos las notas/obs con resalte [cite: 2025-12-30]
+        // 2. Procesamos y limpiamos las notas/obs
         const notaRaw = params.get('nota') || "";
         const notaLimpia = limpiarTexto(notaRaw);
         
@@ -123,7 +124,7 @@
             ? `<div class="obs-destacada">ATENCION: ${notaLimpia}</div>` 
             : `<div class="dato">SIN OBSERVACIONES ADICIONALES.</div>`;
 
-        // 3. Armamos el HTML con títulos limpios (sin tildes)
+        // 3. Armamos el HTML con datos limpios
         const html = `
             <div class="dato"><b>CLIENTE:</b> ${limpiarTexto(params.get('cliente') ?? 'N/A')}</div>
             <div class="dato"><b>TEL:</b> ${params.get('tel') ?? 'N/A'}</div>
@@ -146,11 +147,9 @@
 
     window.onload = () => {
         renderTicket();
-        // Esperamos un poco para asegurar el renderizado limpio [cite: 2025-12-30]
+        // Esperamos un poco para que el navegador procese el texto limpio
         setTimeout(() => { window.print(); }, 800);
     };
-</script>
-   
 </script>
 </body>
 </html>
