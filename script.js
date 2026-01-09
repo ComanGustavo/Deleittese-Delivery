@@ -277,9 +277,11 @@ window.accesoAdmin = () => {
 function generarTicket(pedido, id) {
     const urlBase = "ticket.html";
     const params = new URLSearchParams({
-        id: id ? id.substring(0, 5).toUpperCase() : "000", // Extrae los primeros 5 caracteres
+        // AGREGAMOS ESTA LÍNEA PARA QUE EL ID VIAJE AL TICKET
+        id: id ? id.substring(0, 5).toUpperCase() : "000", 
+        
         cliente: pedido.cliente,
-        tel: pedido.telefono || "Sin Teléfono",
+        tel: pedido.telefono || "Sin Telefono", // Sin tilde para evitar símbolos raros
         dir: pedido.direccion,
         items: pedido.items,
         subtotal: pedido.subtotal || 0,
