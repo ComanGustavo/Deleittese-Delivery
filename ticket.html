@@ -5,57 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Deleittese</title>
     <style>
-        /* CONFIGURACIÓN DEFINITIVA CANON 58mm [cite: 2025-12-30] */
+        /* CONFIGURACIÓN PARA PAPEL DE 80mm [cite: 2025-12-30] */
         body {
             font-family: 'Courier New', monospace;
-            width: 58mm; 
+            width: 76mm; /* Ancho real para papel de 80mm [cite: 2025-12-30] */
             margin: 0;
-            padding-left: 4mm; /* ARREGLA EL CORTE IZQUIERDO [cite: 2026-01-09] */
+            padding-left: 2mm; 
             padding-right: 2mm; 
             color: #000;
             background: #fff;
-            box-sizing: border-box; 
+            box-sizing: border-box;
         }
 
+        .margen-superior { height: 20px; } /* Evita corte de cuchilla [cite: 2025-12-30] */
+
         .text-center { text-align: center; width: 100%; }
-        h2 { font-size: 18px; margin: 10px 0 5px 0; text-transform: uppercase; }
         
-        /* Espacio superior para evitar corte de la cuchilla [cite: 2025-12-30] */
-        .margen-superior { height: 15px; } 
+        h2 { 
+            font-size: 22px; 
+            margin: 5px 0; 
+            text-transform: uppercase; 
+            font-weight: bold;
+        }
+        
+        .linea { border-top: 1px dashed #000; margin: 8px 0; width: 100%; }
 
-        .linea { border-top: 1px dashed #000; margin: 5px 0; width: 100%; }
-
-        .dato { font-size: 12px; margin: 3px 0; padding-left: 2px; }
+        /* Agrandamos textos para que se lean bien en 80mm [cite: 2025-12-30] */
+        .dato { font-size: 16px; margin: 5px 0; }
 
         .item-pedido {
-            font-size: 13px;
+            font-size: 16px;
             font-weight: bold; 
-            margin: 8px 0; /* Un poquito más de espacio entre items */
+            margin: 10px 0;
             display: flex;
             justify-content: space-between;
             width: 100%; 
-            flex-wrap: wrap; 
         }
 
         .obs-destacada {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             border: 2px solid #000; 
-            padding: 5px;
-            margin: 10px 0;
+            padding: 8px;
+            margin: 12px 0;
             text-align: center;
         }
 
         .total-box {
-            font-size: 18px;
+            font-size: 26px; /* Total bien grande para papel de 80mm [cite: 2025-12-30] */
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
             text-align: right;
-            padding-right: 2px;
         }
 
         @media print {
-            body { width: 58mm; margin: 0; }
+            body { width: 76mm; margin: 0; }
             @page { margin: 0; }
         }
     </style>
@@ -65,7 +69,7 @@
 
     <div class="text-center">
         <h2>DELEITTESE</h2>
-        <p>*** ORDEN DE PEDIDO ***</p>
+        <p style="font-size: 14px;">*** ORDEN DE PEDIDO ***</p>
     </div>
 
     <div class="linea"></div>
@@ -73,7 +77,7 @@
     <div class="linea"></div>
 
     <div class="text-center">
-        <p style="font-weight: bold; font-size: 14px; margin-top: 10px;">¡Gracias por su compra!</p>
+        <p style="font-weight: bold; font-size: 16px; margin: 15px 0;">¡Gracias por su compra!</p>
     </div>
 
     <script>
@@ -85,7 +89,6 @@
     function renderTicket() {
         const params = new URLSearchParams(window.location.search);
         
-        // Procesar Productos
         const itemsRaw = params.get('items') || '';
         const productosArray = itemsRaw.split('\n'); 
         let detalleHTML = "";
@@ -106,19 +109,19 @@
             ? `<div class="obs-destacada">ATENCION: ${limpiarTexto(nota)}</div>` 
             : `<div class="dato">SIN OBSERVACIONES.</div>`;
 
-        // Limpiamos el símbolo $ por si ya viene en el parámetro y no duplicarlo
         const envio = (params.get('envio') || "0").replace("$", "");
         const total = (params.get('total') || "0").replace("$", "");
 
         const html = `
             <div class="text-center">
-                <p style="font-size: 16px; font-weight: bold;">TICKET: #${params.get('id')}</p>
+                <p style="font-size: 18px; font-weight: bold;">TICKET: #${params.get('id')}</p>
             </div>
             <div class="linea"></div>
             <div class="dato"><b>CLIENTE:</b> ${limpiarTexto(params.get('cliente'))}</div>
             <div class="dato"><b>TEL:</b> ${params.get('tel')}</div>
             <div class="dato"><b>DIR:</b> ${limpiarTexto(params.get('dir'))}</div>
             <div class="linea"></div>
+            <div style="font-size: 13px; margin-bottom: 5px;">DETALLE:</div>
             ${detalleHTML} 
             <div class="linea"></div>
             ${obsHTML}
@@ -131,8 +134,7 @@
 
     window.onload = () => {
         renderTicket();
-        // Disparo de impresión automática [cite: 2025-12-29]
-        setTimeout(() => { window.print(); }, 500);
+        setTimeout(() => { window.print(); }, 500); // Impresión automática [cite: 2025-12-29]
     };
     </script>
 </body>
