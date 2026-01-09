@@ -175,8 +175,10 @@ function actualizarInterfaz() {
         cantTotal += i.cantidad;
         lista.innerHTML += `
         <li class="list-group-item d-flex justify-content-between align-items-center border-dark">
-            <div><span class="fw-bold">${i.cantidad}x</span> ${i.name}</div>
-            <button class="btn btn-danger btn-sm" onclick="eliminarDelCarrito(${idx})"><i class="fas fa-trash"></i></button>
+         <div>
+        <span class="fw-bold">${i.cantidad}x</span> ${i.name} 
+        <small class="text-muted">($${i.price})</small> </div>
+        <button class="btn btn-danger btn-sm" onclick="eliminarDelCarrito(${idx})"><i class="fas fa-trash"></i></button>
         </li>`;
     });
     if(contador) contador.innerText = cantTotal;
@@ -226,17 +228,19 @@ window.enviarAlPanelAdmin = () => {
         return;
     }
 
+   // Busca esta parte dentro de window.enviarAlPanelAdmin
     const nuevoPedido = {
-        cliente: nombre,
-        telefono: telefono, // Ahora se guarda en Firebase
-        direccion: direccion,
-        items: carrito.map(i => `${i.cantidad}x ${i.name}`).join("\n"),
-        subtotal: subtotal,
-        envio: envio, // Guardamos el costo por separado
-        total: subtotal + envio,
-        nota: nota,
-        fecha: firebase.database.ServerValue.TIMESTAMP,
-        impreso: false 
+    cliente: nombre,
+    telefono: telefono,
+    direccion: direccion,
+    // MODIFICAMOS ESTA LÍNEA ABAJO:
+    items: carrito.map(i => `${i.cantidad}x ${i.name} - $${i.price}`).join("\n"),
+    subtotal: subtotal,
+    envio: envio,
+    total: subtotal + envio,
+    nota: nota,
+    fecha: firebase.database.ServerValue.TIMESTAMP,
+    impreso: false 
     };
 
     database.ref('pedidos').push(nuevoPedido)
