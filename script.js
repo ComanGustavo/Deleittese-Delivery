@@ -259,10 +259,10 @@ function imprimirPedidoManual(id) {
             alert("Error: No se encontró el pedido o la función de ticket.");
         }
     });
+} // <--- AQUÍ FALTABA ESTA LLAVE PARA CERRAR LA FUNCIÓN
 
-
-    // ==========================================
-// ACCESO Y UTILIDADES
+// ==========================================
+// ACCESO Y UTILIDADES (FUERA DE OTRAS FUNCIONES)
 // ==========================================
 
 window.accesoAdmin = () => {
@@ -287,5 +287,4 @@ function generarTicket(pedido) {
         nota: pedido.nota || ""
     });
     window.open(`${urlBase}?${params.toString()}`, '_blank');
-}
 }
