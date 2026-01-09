@@ -6,15 +6,17 @@
     <title>Ticket Deleittese</title>
     <style>
         /* CONFIGURACIÓN ANCHA DE AYER (58mm) */
+       /* CONFIGURACIÓN AJUSTADA PARA CANON 58mm */
         body {
             font-family: 'Courier New', monospace;
-            width: 58mm; /* Volvemos al ancho que te funcionó ayer [cite: 2025-12-30] */
+            width: 58mm; 
             margin: 0;
-            padding: 0; /* Eliminamos el padding para que no se desplace a la izquierda */
+            padding-left: 4mm; /* ESTO ARREGLA EL CORTE IZQUIERDO */
+            padding-right: 2mm; 
             color: #000;
             background: #fff;
+            box-sizing: border-box; /* Asegura que el padding no sume ancho extra */
         }
-
         .text-center { text-align: center; width: 100%; }
         h2 { font-size: 18px; margin: 10px 0 5px 0; text-transform: uppercase; }
         
@@ -28,10 +30,11 @@
         .item-pedido {
             font-size: 13px;
             font-weight: bold; 
-            margin: 5px 0;
+            margin: 6px 0;
             display: flex;
             justify-content: space-between;
-            padding: 0 2px;
+            width: 100%; /* Se ajusta al nuevo ancho interno */
+            flex-wrap: wrap; 
         }
 
         .obs-destacada {
