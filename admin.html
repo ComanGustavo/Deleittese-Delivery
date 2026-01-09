@@ -70,35 +70,68 @@
     });
 
     // 2. GENERACIÓN DE TICKET (SOLO AL CLICKEAR)
-    function descargarArchivoTicket(p, id) {
-        const ANCHO_TICKET = 30;
-        const linea = "=".repeat(ANCHO_TICKET);
-        const ahora = new Date();
-        const fecha = ahora.toLocaleDateString();
-        const hora = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const nroTicket = id.substring(id.length - 4).toUpperCase();
+   // Localiza la función descargarArchivoTicket en admin.html y reemplaza el bloque de 'const contenido'
+function descargarArchivoTicket(p, id) {
+    const ANCHO_TICKET = 30; // Ajustado para tu ticketera de 58mm [cite: 2025-12-30]
+    const linea = "=".repeat(ANCHO_TICKET);
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString();
+    const hora = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const nroTicket = id.substring(id.length - 4).toUpperCase();
 
-        const centrar = (texto) => {
-            const espacios = Math.max(0, Math.floor((ANCHO_TICKET - texto.length) / 2));
-            return " ".repeat(espacios) + texto;
-        };
+    const centrar = (texto) => {
+        const espacios = Math.max(0, Math.floor((ANCHO_TICKET - texto.length) / 2));
+        return " ".repeat(espacios) + texto;
+    };
 
-        let itemsTxt = Array.isArray(p.items) 
-            ? p.items.map(i => `${i.cant} x ${i.nombre}`).join('\n') 
-            : (p.items || "No hay productos");
-
-        const contenido = `${centrar("DELEITTESE - DELIVERY")}\n${centrar("Ticket: #" + nroTicket)}\n${linea}\nFECHA: ${fecha}\nHORA:  ${hora}\n${linea}\nCLIENTE: ${p.cliente}\nDIR: ${p.direccion}\nTEL: ${p.telefono || 'N/A'}\nPAGO: ${p.pago || p.total}\n${linea}\nPRODUCTOS:\n${itemsTxt}\n${linea}\nOBSERVACIONES:\n${p.nota ? p.nota.toUpperCase() : 'SIN ACLARACIONES'}\n${linea}\n${centrar("TOTAL: " + p.total)}\n${linea}\n${centrar("¡Gracias por elegirnos!")}`;
-
-        const blob = new Blob([contenido], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `pedido_${id}.txt`;
-        link.click();
-        URL.revokeObjectURL(link.href);
-
-        database.ref('pedidos/' + id).update({ impreso: true });
+    // Lógica para que el nombre no empuje el precio fuera del margen [cite: 2025-12-30]
+    let itemsTxt = "";
+    if (typeof p.items === "string") {
+        itemsTxt = p.items.split('\n').map(lineaItem => {
+            if (lineaItem.includes(" - ")) {
+                let partes = lineaItem.split(" - ");
+                let nombre = partes[0];
+                let precio = partes[1];
+                let maxNombre = ANCHO_TICKET - precio.length - 1; 
+                let nombreFinal = nombre.length > maxNombre ? nombre.substring(0, maxNombre) : nombre;
+                return `${nombreFinal} ${precio}`;
+            }
+            return lineaItem;
+        }).join('\n');
     }
 
+    // ARMADO DEL CONTENIDO CON "ENVIO" DEBAJO DEL TELÉFONO
+    const contenido = `${centrar("DELEITTESE - DELIVERY")}
+${centrar("Ticket: #" + nroTicket)}
+${linea}
+FECHA: ${fecha}
+HORA:  ${hora}
+${linea}
+CLIENTE: ${p.cliente}
+DIR: ${p.direccion}
+TEL: ${p.telefono || 'N/A'}
+ENVIO: $${p.envio || 0}
+${linea}
+PRODUCTOS:
+${itemsTxt}
+${linea}
+OBSERVACIONES:
+${p.nota ? p.nota.toUpperCase() : 'SIN ACLARACIONES'}
+${linea}
+${centrar("TOTAL: $" + p.total)}
+${linea}
+${centrar("¡Gracias por elegirnos!")}`;
+
+    // ... (resto del código para generar el blob y descargar)
+    const blob = new Blob([contenido], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `pedido_${id}.txt`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+
+    database.ref('pedidos/' + id).update({ impreso: true });
+}
     // 3. MOSTRAR PEDIDOS EN PANTALLA
     database.ref('pedidos').on('value', (snapshot) => {
         const contenedor = document.getElementById('contenedor-pedidos');

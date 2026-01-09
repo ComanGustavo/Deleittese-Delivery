@@ -265,7 +265,6 @@ function imprimirPedidoManual(id) {
         }
     }); 
 }
-// <--- AQUÍ FALTABA ESTA LLAVE PARA CERRAR LA FUNCIÓN
 
 // ==========================================
 // ACCESO Y UTILIDADES (FUERA DE OTRAS FUNCIONES)
