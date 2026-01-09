@@ -8,9 +8,9 @@
         /* ===== CONFIGURACIÓN TICKETERA 58mm ===== */
         body {
             font-family: 'Courier New', monospace;
-            width: 58mm;
+            width: 54mm; /* Un poco menos de 58mm para evitar cortes laterales */
             margin: 0;
-            padding: 4px;
+            padding: 2mm;
             color: #000;
             background: #fff;
         }
@@ -43,8 +43,14 @@
             display: block;
         }
 
+        .total-box {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
         @media print {
-            body { width: 58mm; margin: 0; }
+            body { width: 54mm; margin: 0; }
             @page { margin: 0; }
         }
     </style>
@@ -72,10 +78,10 @@
     function renderTicket() {
         const params = new URLSearchParams(window.location.search);
         
-        // Procesamos la lista de productos
-        const pedidoRaw = params.get('pedido') ?? 'Sin productos';
-        // Separamos por coma (como configuramos en el script.js)
-        const productosArray = pedidoRaw.split(','); 
+        // 1. Procesamos los productos (usamos 'items' que es lo que manda el script.js)
+        const itemsRaw = params.get('items') ?? 'Sin productos';
+        // Separamos por salto de línea (\n) porque así lo configuramos en el push de Firebase
+        const productosArray = itemsRaw.split('\n'); 
         
         let detalleHTML = "";
         productosArray.forEach(prod => {
@@ -84,14 +90,18 @@
             }
         });
 
+        // 2. Construimos el HTML capturando Teléfono, Envío y Nota
         const html = `
             <div class="dato"><b>CLIENTE:</b> ${params.get('cliente') ?? 'No indicado'}</div>
-            <div class="dato"><b>DIRECCIÓN:</b> ${params.get('direccion') ?? 'Retiro en Local'}</div>
+            <div class="dato"><b>TEL:</b> ${params.get('tel') ?? 'N/A'}</div>
+            <div class="dato"><b>DIR:</b> ${params.get('dir') ?? 'Retiro en Local'}</div>
             <div class="linea"></div>
             <div class="dato"><b>DETALLE:</b><br>${detalleHTML}</div>
             <div class="linea"></div>
-            <div class="dato"><b>ENVÍO:</b> ${params.get('envio') ?? '$0'}</div>
-            <div class="dato"><b>TOTAL:</b> <span style="font-size:14px;">${params.get('total') ?? '$0.00'}</span></div>
+            <div class="dato"><b>OBS:</b> ${params.get('nota') || 'Sin observaciones'}</div>
+            <div class="linea"></div>
+            <div class="dato"><b>ENVÍO:</b> $${params.get('envio') ?? '0'}</div>
+            <div class="total-box">TOTAL: $${params.get('total') ?? '0'}</div>
         `;
         
         document.getElementById("contenedor-datos").innerHTML = html;
@@ -99,33 +109,11 @@
 
     window.onload = () => {
         renderTicket();
-
-        // Delay para asegurar que el navegador renderice el texto antes de imprimir
+        // Delay para asegurar renderizado antes de imprimir
         setTimeout(() => {
             window.print();
-            // Opcional: window.close(); // Esto cerraría la pestaña después de imprimir
-        }, 1000);
-    }; 
-
-
-    function generarTicket(pedido) {
-    // Creamos una URL con los parámetros para el ticket
-    const urlBase = "ticket.html";
-    const params = new URLSearchParams({
-        cliente: pedido.cliente,
-        tel: pedido.telefono,
-        dir: pedido.direccion,
-        items: pedido.items,
-        subtotal: pedido.subtotal,
-        envio: pedido.envio,
-        total: pedido.total,
-        nota: pedido.nota
-    });
-
-    // Abrimos el ticket en una pestaña nueva para imprimir
-    window.open(`${urlBase}?${params.toString()}`, '_blank');
-}
+        }, 800);
+    };
     </script>
-
 </body>
 </html>
