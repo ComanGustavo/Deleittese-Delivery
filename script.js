@@ -274,9 +274,10 @@ window.accesoAdmin = () => {
     }
 };
 
-function generarTicket(pedido) {
+function generarTicket(pedido, id) {
     const urlBase = "ticket.html";
     const params = new URLSearchParams({
+        id: id ? id.substring(0, 5).toUpperCase() : "000", // Extrae los primeros 5 caracteres
         cliente: pedido.cliente,
         tel: pedido.telefono || "Sin Teléfono",
         dir: pedido.direccion,
