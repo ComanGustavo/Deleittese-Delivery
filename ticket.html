@@ -8,7 +8,7 @@
         /* ===== CONFIGURACIÓN TICKETERA 58mm ===== */
         body {
             font-family: 'Courier New', monospace;
-            width: 54mm; /* Un poco menos de 58mm para evitar cortes laterales */
+            width: 54mm; 
             margin: 0;
             padding: 2mm;
             color: #000;
@@ -32,21 +32,38 @@
 
         .dato {
             font-size: 11px;
-            margin: 3px 0;
+            margin: 2px 0;
             word-wrap: break-word;
-            line-height: 1.2;
         }
 
+        /* ===== SECCIÓN PLATOS (MAX LEGIBILIDAD) ===== */
         .item-pedido {
-            font-size: 11px;
-            margin-bottom: 2px;
+            font-size: 15px; /* Tamaño grande para lectura rápida */
+            font-weight: bold; 
+            margin: 6px 0;
             display: block;
+            text-transform: uppercase;
+            border-left: 3px solid #000; /* Marca visual al costado */
+            padding-left: 5px;
+        }
+
+        /* ===== SECCIÓN OBSERVACIONES (CRÍTICO) ===== */
+        .obs-destacada {
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #000;
+            color: #fff; /* Invertimos colores: fondo negro, letra blanca */
+            padding: 4px;
+            margin-top: 5px;
+            text-align: center;
+            text-transform: uppercase;
         }
 
         .total-box {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
-            margin-top: 5px;
+            margin-top: 10px;
+            text-align: right;
         }
 
         @media print {
@@ -59,18 +76,16 @@
 
     <div class="text-center">
         <h2>DELEITTESE</h2>
-        <p>*** TICKET DE PEDIDO ***</p>
+        <p>*** ORDEN DE COCINA ***</p>
     </div>
 
     <div class="linea"></div>
 
-    <div id="contenedor-datos">
-        </div>
+    <div id="contenedor-datos"></div>
 
     <div class="linea"></div>
 
     <div class="text-center">
-        <p>¡Muchas gracias!</p>
         <p>Deleittese 2026</p>
     </div>
 
@@ -78,28 +93,34 @@
     function renderTicket() {
         const params = new URLSearchParams(window.location.search);
         
-        // 1. Procesamos los productos (usamos 'items' que es lo que manda el script.js)
         const itemsRaw = params.get('items') ?? 'Sin productos';
-        // Separamos por salto de línea (\n) porque así lo configuramos en el push de Firebase
         const productosArray = itemsRaw.split('\n'); 
         
         let detalleHTML = "";
         productosArray.forEach(prod => {
             if(prod.trim() !== "") {
-                detalleHTML += `<div class="item-pedido">- ${prod.trim()}</div>`;
+                detalleHTML += `<div class="item-pedido">${prod.trim()}</div>`;
             }
         });
 
-        // 2. Construimos el HTML capturando Teléfono, Envío y Nota
+        const nota = params.get('nota') || "";
+        const obsHTML = nota.trim() !== "" 
+            ? `<div class="obs-destacada">ATENCIÓN: ${nota}</div>` 
+            : `<div class="dato">Sin observaciones adicionales.</div>`;
+
         const html = `
-            <div class="dato"><b>CLIENTE:</b> ${params.get('cliente') ?? 'No indicado'}</div>
+            <div class="dato"><b>CLIENTE:</b> ${params.get('cliente') ?? 'N/A'}</div>
             <div class="dato"><b>TEL:</b> ${params.get('tel') ?? 'N/A'}</div>
-            <div class="dato"><b>DIR:</b> ${params.get('dir') ?? 'Retiro en Local'}</div>
+            <div class="dato"><b>DIR:</b> ${params.get('dir') ?? 'Retiro'}</div>
             <div class="linea"></div>
-            <div class="dato"><b>DETALLE:</b><br>${detalleHTML}</div>
+            
+            <div style="font-size: 10px; margin-bottom: 5px;">DETALLE DEL PEDIDO:</div>
+            ${detalleHTML} 
+            
             <div class="linea"></div>
-            <div class="dato"><b>OBS:</b> ${params.get('nota') || 'Sin observaciones'}</div>
+            ${obsHTML}
             <div class="linea"></div>
+            
             <div class="dato"><b>ENVÍO:</b> $${params.get('envio') ?? '0'}</div>
             <div class="total-box">TOTAL: $${params.get('total') ?? '0'}</div>
         `;
@@ -109,10 +130,7 @@
 
     window.onload = () => {
         renderTicket();
-        // Delay para asegurar renderizado antes de imprimir
-        setTimeout(() => {
-            window.print();
-        }, 800);
+        setTimeout(() => { window.print(); }, 800);
     };
     </script>
 </body>
