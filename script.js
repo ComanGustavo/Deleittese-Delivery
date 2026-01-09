@@ -254,12 +254,14 @@ function imprimirPedidoManual(id) {
     database.ref('pedidos/' + id).once('value', (snapshot) => {
         const pedido = snapshot.val();
         if (pedido && typeof generarTicket === "function") {
-            generarTicket(pedido); 
+            // CAMBIO AQUÍ: Agregamos 'id' dentro del paréntesis
+            generarTicket(pedido, id); 
         } else {
             alert("Error: No se encontró el pedido o la función de ticket.");
         }
-    });
-} // <--- AQUÍ FALTABA ESTA LLAVE PARA CERRAR LA FUNCIÓN
+    }); 
+}
+// <--- AQUÍ FALTABA ESTA LLAVE PARA CERRAR LA FUNCIÓN
 
 // ==========================================
 // ACCESO Y UTILIDADES (FUERA DE OTRAS FUNCIONES)
