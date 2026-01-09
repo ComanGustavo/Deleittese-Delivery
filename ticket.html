@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Deleittese</title>
     <style>
-        /* CONFIGURACIÓN ANCHA DE AYER (58mm) */
-       /* CONFIGURACIÓN AJUSTADA PARA CANON 58mm */
+        /* CONFIGURACIÓN DEFINITIVA CANON 58mm [cite: 2025-12-30] */
         body {
             font-family: 'Courier New', monospace;
             width: 58mm; 
             margin: 0;
-            padding-left: 4mm; /* ESTO ARREGLA EL CORTE IZQUIERDO */
+            padding-left: 4mm; /* ARREGLA EL CORTE IZQUIERDO [cite: 2026-01-09] */
             padding-right: 2mm; 
             color: #000;
             background: #fff;
-            box-sizing: border-box; /* Asegura que el padding no sume ancho extra */
+            box-sizing: border-box; 
         }
+
         .text-center { text-align: center; width: 100%; }
         h2 { font-size: 18px; margin: 10px 0 5px 0; text-transform: uppercase; }
         
-        /* Espacio superior para que no se corte arriba */
+        /* Espacio superior para evitar corte de la cuchilla [cite: 2025-12-30] */
         .margen-superior { height: 15px; } 
 
         .linea { border-top: 1px dashed #000; margin: 5px 0; width: 100%; }
@@ -30,17 +30,17 @@
         .item-pedido {
             font-size: 13px;
             font-weight: bold; 
-            margin: 6px 0;
+            margin: 8px 0; /* Un poquito más de espacio entre items */
             display: flex;
             justify-content: space-between;
-            width: 100%; /* Se ajusta al nuevo ancho interno */
+            width: 100%; 
             flex-wrap: wrap; 
         }
 
         .obs-destacada {
             font-size: 14px;
             font-weight: bold;
-            border: 2px solid #000; /* Usamos recuadro en lugar de fondo negro para asegurar visibilidad */
+            border: 2px solid #000; 
             padding: 5px;
             margin: 10px 0;
             text-align: center;
@@ -106,6 +106,10 @@
             ? `<div class="obs-destacada">ATENCION: ${limpiarTexto(nota)}</div>` 
             : `<div class="dato">SIN OBSERVACIONES.</div>`;
 
+        // Limpiamos el símbolo $ por si ya viene en el parámetro y no duplicarlo
+        const envio = (params.get('envio') || "0").replace("$", "");
+        const total = (params.get('total') || "0").replace("$", "");
+
         const html = `
             <div class="text-center">
                 <p style="font-size: 16px; font-weight: bold;">TICKET: #${params.get('id')}</p>
@@ -119,14 +123,15 @@
             <div class="linea"></div>
             ${obsHTML}
             <div class="linea"></div>
-            <div class="dato"><b>ENVIO:</b> $${params.get('envio')}</div>
-            <div class="total-box">TOTAL: $${params.get('total')}</div>
+            <div class="dato"><b>ENVIO:</b> $${envio}</div>
+            <div class="total-box">TOTAL: $${total}</div>
         `;
         document.getElementById("contenedor-datos").innerHTML = html;
     }
 
     window.onload = () => {
         renderTicket();
+        // Disparo de impresión automática [cite: 2025-12-29]
         setTimeout(() => { window.print(); }, 500);
     };
     </script>
