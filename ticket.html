@@ -105,7 +105,26 @@
             window.print();
             // Opcional: window.close(); // Esto cerraría la pestaña después de imprimir
         }, 1000);
-    };
+    }; 
+
+
+    function generarTicket(pedido) {
+    // Creamos una URL con los parámetros para el ticket
+    const urlBase = "ticket.html";
+    const params = new URLSearchParams({
+        cliente: pedido.cliente,
+        tel: pedido.telefono,
+        dir: pedido.direccion,
+        items: pedido.items,
+        subtotal: pedido.subtotal,
+        envio: pedido.envio,
+        total: pedido.total,
+        nota: pedido.nota
+    });
+
+    // Abrimos el ticket en una pestaña nueva para imprimir
+    window.open(`${urlBase}?${params.toString()}`, '_blank');
+}
     </script>
 
 </body>

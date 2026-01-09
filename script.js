@@ -207,20 +207,33 @@ window.cambioMetodoEntrega = () => {
 // ==========================================
 window.enviarAlPanelAdmin = () => {
     const nombre = document.getElementById('cliente-nombre').value;
+    const telefono = document.getElementById('cliente-tel').value; // Capturamos el teléfono
     const direccion = document.getElementById('cliente-dir').value || "Retiro en Local";
-    const total = document.getElementById("total-pago").innerText;
     const nota = document.getElementById('cliente-nota').value || "";
+    
+    // Lógica para el envío
+    const metodo = document.getElementById("metodo-entrega").value;
+    const envio = metodo === "Envio" ? 1800 : 0; // Usamos el valor numérico
+    
+    // Calculamos el subtotal (limpiando puntos y símbolos)
+    let subtotal = 0;
+    carrito.forEach(i => {
+        subtotal += parseInt(i.price.replace(/\./g, "")) * i.cantidad;
+    });
 
-    if (!nombre || carrito.length === 0) {
-        alert("⚠️ Completa tu nombre y agrega productos.");
+    if (!nombre || !telefono || carrito.length === 0) {
+        alert("⚠️ Completa nombre, teléfono y agrega productos.");
         return;
     }
 
     const nuevoPedido = {
         cliente: nombre,
+        telefono: telefono, // Ahora se guarda en Firebase
         direccion: direccion,
         items: carrito.map(i => `${i.cantidad}x ${i.name}`).join("\n"),
-        total: total,
+        subtotal: subtotal,
+        envio: envio, // Guardamos el costo por separado
+        total: subtotal + envio,
         nota: nota,
         fecha: firebase.database.ServerValue.TIMESTAMP,
         impreso: false 
@@ -233,28 +246,6 @@ window.enviarAlPanelAdmin = () => {
             actualizarInterfaz();
         })
         .catch(err => console.error("Error Firebase:", err));
-};
-
-window.enviarPorWhatsApp = () => {
-    if (carrito.length === 0) return alert("Carrito vacío");
-
-    const nombre = document.getElementById('cliente-nombre').value || "Cliente";
-    const direccion = document.getElementById('cliente-dir').value || "No indicada";
-    const total = document.getElementById("total-pago").innerText;
-    const itemsLink = carrito.map(i => `${i.cantidad}x ${i.name}`).join(",");
-
-    const urlBase = "https://comangustavo.github.io/Deleittese-Delivery/ticket.html";
-    const params = `?cliente=${encodeURIComponent(nombre)}&direccion=${encodeURIComponent(direccion)}&pedido=${encodeURIComponent(itemsLink)}&total=${encodeURIComponent(total)}`;
-    
-    let msg = `*NUEVO PEDIDO*%0A*Cliente:* ${encodeURIComponent(nombre)}%0A*Total:* ${encodeURIComponent(total)}%0A%0A*Ticket:* ${urlBase + params}`;
-
-    window.open(`https://wa.me/${TEL_LOCAL}?text=${msg}`, "_blank");
-};
-
-window.accesoAdmin = () => {
-    const clave = prompt("Ingrese la clave:");
-    if (clave === "deleittese2026") window.location.href = "admin.html";
-    else alert("Incorrecto");
 };
 
 // ESTA FUNCIÓN DEBE ESTAR AFUERA Y SOLA
