@@ -20,7 +20,7 @@ const database = firebase.database();
 // CONSTANTES
 // ==========================================
 let carrito = [];
-const COSTO_ENVIO = 1.800;
+const COSTO_ENVIO = 1800;
 const TEL_LOCAL = "5493644146872";
 
 // ==========================================
